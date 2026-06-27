@@ -363,19 +363,19 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
 
                 <div class="field-row field-row-compact">
                   <div class="field">
-                    <!-- <label for="name">Name</label> -->
+                    <label class="sr-only" for="name">Name</label>
                     <input id="name" name="name" type="text" placeholder="Enter your name" value="<?= booking_value($bookingData, 'name') ?>" required>
                     <?php if (isset($bookingErrors['name'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['name'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                   <div class="field">
-                    <!-- <label for="mobile">Mobile Number</label> -->
+                    <label class="sr-only" for="mobile">Mobile Number</label>
                     <input id="mobile" name="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" pattern="[6-9][0-9]{9}" value="<?= booking_value($bookingData, 'mobile') ?>" required>
                     <?php if (isset($bookingErrors['mobile'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['mobile'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                 </div>
 
                 <div class="field">
-                  <!-- <label for="email">Email</label> -->
+                  <label class="sr-only" for="email">Email</label>
                   <input id="email" name="email" type="email" placeholder="Enter your email address" value="<?= booking_value($bookingData, 'email') ?>" required>
                   <?php if (isset($bookingErrors['email'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['email'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                 </div>
@@ -384,14 +384,14 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
 
                 <div class="field-row field-row-compact">
                   <div class="field">
-                    <!-- <label for="pickup">Pickup Location</label> -->
+                    <label class="sr-only" for="pickup">Pickup Location</label>
                     <input id="pickup" name="pickup" type="text" placeholder="Enter pickup location" value="<?= booking_value($bookingData, 'pickup') ?>" autocomplete="off" required>
                     <input id="pickup-lat" type="hidden">
                     <input id="pickup-lng" type="hidden">
                     <?php if (isset($bookingErrors['pickup'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['pickup'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                   <div class="field">
-                    <!-- <label for="drop">Drop Location</label> -->
+                    <label class="sr-only" for="drop">Drop Location</label>
                     <input id="drop" name="drop" type="text" placeholder="Enter drop location" value="<?= booking_value($bookingData, 'drop') ?>" autocomplete="off" required>
                     <input id="drop-lat" type="hidden">
                     <input id="drop-lng" type="hidden">
@@ -406,12 +406,12 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
 
                 <div class="field-row field-row-compact">
                   <div class="field">
-                    <!-- <label for="date">Date</label> -->
+                    <label class="sr-only" for="date">Date</label>
                     <input id="date" name="date" type="date" min="<?= htmlspecialchars($todayDate, ENT_QUOTES, 'UTF-8') ?>" value="<?= booking_value($bookingData, 'date') ?>" required>
                     <?php if (isset($bookingErrors['date'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['date'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                   <div class="field">
-                    <!-- <label for="time">Time</label> -->
+                    <label class="sr-only" for="time">Time</label>
                     <input id="time" name="time" type="time" value="<?= booking_value($bookingData, 'time') ?>" required>
                     <?php if (isset($bookingErrors['time'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['time'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
@@ -419,12 +419,12 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
               
                 <div class="field-row field-row-compact">
                     <div class="field trip-days-field" id="trip-days-field" <?= $bookingData['trip_type'] !== 'two-way' ? 'hidden' : '' ?>>
-                  <!-- <label for="trip-days">Days</label> -->
+                  <label class="sr-only" for="trip-days">Trip Days</label>
                   <input id="trip-days" name="trip_days" type="number" min="1" max="30" placeholder="Enter number of days" value="<?= booking_value($bookingData, 'trip_days') ?>">
                   <?php if (isset($bookingErrors['trip_days'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['trip_days'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                 </div>
                 <div class="field">
-                  <!-- <label for="cabtype">Select Cab Type</label> -->
+                  <label class="sr-only" for="cabtype">Select Cab Type</label>
                   <select id="cabtype" name="cabtype" required>
                     <option value="">-- Select vehicle type --</option>
                     <?php foreach ($carRateTable as $vehicleCode => $rateInfo): ?>
@@ -485,7 +485,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
               <p>On-time airport pickup and drop with live coordination for arrivals and departures.</p>
             </div>
             <div class="service-image">
-              <img src="images/airport-call-taxi.png" alt="Airport transfer service">
+              <img src="images/City-taxi.png" alt="Airport transfer service" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -499,7 +499,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
               <p>Quick and comfortable rides within the city for daily travel, meetings and events.</p>
             </div>
             <div class="service-image">
-              <img src="images/city-call-taxi.png" alt="City rides service">
+              <img src="images/city-call-taxi.png" alt="City rides service" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -513,7 +513,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
               <p>Safe long-distance travel with premium sedans and professional chauffeurs.</p>
             </div>
             <div class="service-image">
-              <img src="images/one-way-outstation-call-taxi.png" alt="Outstation service">
+              <img src="images/one-way-outstation-call-taxi.png" alt="Outstation service" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -527,7 +527,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
               <p>Book by the hour for shopping, business travel or flexible day plans.</p>
             </div>
             <div class="service-image">
-              <img src="images/roundtrip-white-call-taxi.png" alt="Hourly rental service">
+              <img src="images/roundtrip-white-call-taxi.png" alt="Hourly rental service" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -541,7 +541,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
               <p>Premium business transport solutions with polished service & support.</p>
             </div>
             <div class="service-image">
-              <img src="images/corporate-white-call-taxi.png" alt="Corporate travel service">
+              <img src="images/corporate-white-call-taxi.png" alt="Corporate travel service" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -682,7 +682,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
       <div class="container">
         <div class="app-card glass">
           <div class="phones">
-            <img src="images/booking-taxi.png" class="img-fluid" alt="booking-taxi" >
+            <img src="images/booking-taxi.png" class="img-fluid" alt="Online taxi booking illustration" loading="lazy" decoding="async" >
           </div>
 
           <div class="app-copy">

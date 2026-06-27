@@ -57,7 +57,7 @@ require_once __DIR__ . '/seo.php';
               +91 12345 67890
             </span>
           </div>
-          <a class="button button-primary" href="#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
+          <a class="button button-primary" href="index.php#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
         </div>
       </div>
     </div>
@@ -122,7 +122,7 @@ require_once __DIR__ . '/seo.php';
           <div class="fleet-grid">
             <article class="fleet-card" data-category="sedan">
               <div class="fleet-img">
-                <img src="images/sedan-etios-fleet.png" alt="Executive Sedan" />
+                <img src="images/sedan-etios-fleet.png" alt="Executive Sedan" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">Sedan</span>
@@ -137,7 +137,7 @@ require_once __DIR__ . '/seo.php';
                   <span><i class="bi bi-snow"></i> AC</span>
                 </div>
 
-                <a href="index.html#booking" class="fleet-btn"
+                <a href="index.php#booking" class="fleet-btn"
                   >Book This Cab →</a
                 >
               </div>
@@ -145,7 +145,7 @@ require_once __DIR__ . '/seo.php';
 
             <article class="fleet-card" data-category="sedan">
               <div class="fleet-img">
-                <img src="images/swift-dzire-fleet.png" alt="Swift Dzire" />
+                <img src="images/swift-dzire-fleet.png" alt="Swift Dzire" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">Sedan</span>
@@ -161,13 +161,13 @@ require_once __DIR__ . '/seo.php';
                   <span><i class="bi bi-snow"></i> AC</span>
                 </div>
 
-                <a href="index.php" class="fleet-btn">Book This Cab →</a>
+                <a href="index.php#booking" class="fleet-btn">Book This Cab →</a>
               </div>
             </article>
 
             <article class="fleet-card" data-category="suv">
               <div class="fleet-img">
-                <img src="images/suv-ertiga-fleet.png" alt="Ertiga SUV" />
+                <img src="images/suv-ertiga-fleet.png" alt="Ertiga SUV" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">SUV</span>
@@ -183,7 +183,7 @@ require_once __DIR__ . '/seo.php';
                   <span><i class="bi bi-snow"></i> AC</span>
                 </div>
 
-                <a href="index.php" class="fleet-btn">Book This Cab →</a>
+                <a href="index.php#booking" class="fleet-btn">Book This Cab →</a>
               </div>
             </article>
 
@@ -192,6 +192,8 @@ require_once __DIR__ . '/seo.php';
                 <img
                   src="images/SUV-innova-crysta-car.png"
                   alt="Innova Crysta"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div class="fleet-body">
@@ -208,13 +210,13 @@ require_once __DIR__ . '/seo.php';
                   <span><i class="bi bi-snow"></i> AC</span>
                 </div>
 
-                <a href="index.php" class="fleet-btn">Book This Cab →</a>
+                <a href="index.php#booking" class="fleet-btn">Book This Cab →</a>
               </div>
             </article>
 
             <article class="fleet-card" data-category="premium">
               <div class="fleet-img">
-                <img src="images/premium-fleet.png" alt="Premium Car" />
+                <img src="images/premium-fleet.png" alt="Premium Car" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">Premium</span>
@@ -230,13 +232,13 @@ require_once __DIR__ . '/seo.php';
                   <span><i class="bi bi-snow"></i> AC</span>
                 </div>
 
-                <a href="index.php" class="fleet-btn">Book This Cab →</a>
+                <a href="index.php#booking" class="fleet-btn">Book This Cab →</a>
               </div>
             </article>
 
             <article class="fleet-card" data-category="premium">
               <div class="fleet-img">
-                <img src="images/corporate-taxi.png" alt="Corporate Travel" />
+                <img src="images/corporate-taxi.png" alt="Corporate Travel" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">Premium</span>
@@ -252,7 +254,7 @@ require_once __DIR__ . '/seo.php';
                   <span><i class="bi bi-shield-check"></i> Safe</span>
                 </div>
 
-                <a href="index.php" class="fleet-btn">Book This Cab →</a>
+                <a href="index.php#booking" class="fleet-btn">Book This Cab →</a>
               </div>
             </article>
           </div>
@@ -278,7 +280,7 @@ require_once __DIR__ . '/seo.php';
       <div class="container">
         <div class="app-card glass">
           <div class="phones">
-            <img src="images/booking-taxi.png" class="img-fluid" alt="booking-taxi" >
+            <img src="images/booking-taxi.png" class="img-fluid" alt="Online taxi booking illustration" loading="lazy" decoding="async" >
           </div>
 
           <div class="app-copy">

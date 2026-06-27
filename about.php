@@ -57,7 +57,7 @@ require_once __DIR__ . '/seo.php';
               +91 12345 67890
             </span>
           </div>
-          <a class="button button-primary" href="#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
+          <a class="button button-primary" href="index.php#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
         </div>
       </div>
     </div>
@@ -133,7 +133,7 @@ require_once __DIR__ . '/seo.php';
         <div class="container">
           <div class="intro-grid">
             <div class="intro-image">
-              <img src="images/about-us-image.png" alt="White Call Taxi car" />
+              <img src="images/about-us-image.png" alt="White Call Taxi car" loading="lazy" decoding="async" />
             </div>
 
             <div class="intro-content">
@@ -265,7 +265,7 @@ require_once __DIR__ . '/seo.php';
       <div class="container">
         <div class="app-card glass">
           <div class="phones">
-            <img src="images/booking-taxi.png" class="img-fluid" alt="booking-taxi" >
+            <img src="images/booking-taxi.png" class="img-fluid" alt="Online taxi booking illustration" loading="lazy" decoding="async" >
           </div>
 
           <div class="app-copy">

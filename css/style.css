@@ -29,6 +29,18 @@
   box-sizing: border-box;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -1270,7 +1282,7 @@ a:focus-visible {
 }
 
 footer {
-  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-2) 100%);
   padding: 18px 0 42px;
 }
 
@@ -1280,7 +1292,7 @@ footer {
   gap: 24px;
   padding: 28px;
   border-radius: 28px;
-  background: var(--primary);
+  background: #fff;
   border: 1px solid rgba(201, 214, 237, 0.86);
   box-shadow: 0 16px 40px rgba(34, 50, 88, 0.08);
 }
@@ -1307,7 +1319,8 @@ footer {
 .footer-col p,
 .footer-col a {
   color: rgba(11, 11, 11, 0.78);
-  line-height: 1.8;
+  line-height: 1.6;
+  font-size: 0.82rem;
   margin: 0;
 }
 
