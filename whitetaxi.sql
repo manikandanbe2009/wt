@@ -29,3 +29,26 @@ CREATE TABLE IF NOT EXISTS `website_bookings` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_booking_code` (`booking_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `cab_fares` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `vehicle_code` VARCHAR(32) NOT NULL,
+  `vehicle_name` VARCHAR(80) NOT NULL,
+  `one_way_base_fare` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `round_trip_base_fare` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `one_way_per_km` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `round_trip_per_km` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `one_way_driver_bata` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `round_trip_driver_bata` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_vehicle_code` (`vehicle_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `cab_fares` (`vehicle_code`, `vehicle_name`, `one_way_base_fare`, `round_trip_base_fare`, `one_way_per_km`, `round_trip_per_km`, `one_way_driver_bata`, `round_trip_driver_bata`) VALUES
+('SEDAN', 'Sedan', 150.00, 150.00, 14.00, 14.00, 0.00, 300.00),
+('ETIOS', 'Etios', 140.00, 140.00, 13.00, 13.00, 0.00, 300.00),
+('SUV', 'SUV', 220.00, 220.00, 19.00, 19.00, 0.00, 400.00),
+('INNOVA', 'Innova', 260.00, 260.00, 20.00, 20.00, 0.00, 450.00)
+ON DUPLICATE KEY UPDATE
+  `vehicle_name` = VALUES(`vehicle_name`);

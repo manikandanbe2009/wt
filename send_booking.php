@@ -3,7 +3,7 @@
 // so they never corrupt the JSON response
 ob_start();
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
 
 // Discard any output (warnings/notices) produced by require_once above
 ob_clean();
@@ -64,52 +64,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 function booking_db(): mysqli
 {
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    $host = env_value('DB_HOST', 'localhost');
-    $name = env_value('DB_NAME', 'whitetaxi');
-    $user = env_value('DB_USER', 'root');
-    $pass = env_value('DB_PASS', '');
-    $port = (int) env_value('DB_PORT', '3307');
-
-    $server = new mysqli($host, $user, $pass, '', $port);
-    $server->set_charset('utf8mb4');
-    $server->query(
-        sprintf(
-            'CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci',
-            $server->real_escape_string($name)
-        )
-    );
-    $server->select_db($name);
-    $db = $server;
-    $db->set_charset('utf8mb4');
-    $db->query(
-        'CREATE TABLE IF NOT EXISTS website_bookings (
-            id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            booking_code VARCHAR(32) NOT NULL UNIQUE,
-            name VARCHAR(150) NOT NULL,
-            mobile VARCHAR(20) NOT NULL,
-            email VARCHAR(190) NOT NULL,
-            pickup TEXT NOT NULL,
-            drop_location TEXT NOT NULL,
-            travel_date DATE NOT NULL,
-            travel_time VARCHAR(20) NOT NULL,
-            vehicle VARCHAR(80) NOT NULL,
-            trip_type VARCHAR(20) NOT NULL,
-            trip_days INT NOT NULL DEFAULT 1,
-            distance_km DECIMAL(10,2) NOT NULL DEFAULT 0,
-            base_fare DECIMAL(10,2) NOT NULL DEFAULT 0,
-            per_km DECIMAL(10,2) NOT NULL DEFAULT 0,
-            dist_charge DECIMAL(10,2) NOT NULL DEFAULT 0,
-            driver_allowance DECIMAL(10,2) NOT NULL DEFAULT 0,
-            total_fare DECIMAL(10,2) NOT NULL DEFAULT 0,
-            customer_sent TINYINT(1) NOT NULL DEFAULT 0,
-            business_sent TINYINT(1) NOT NULL DEFAULT 0,
-            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
-    );
-
-    return $db;
+    return app_db();
 }
 
 function store_booking(
@@ -182,6 +137,30 @@ $tripTypeLabel = $tripType === 'two-way'
     : 'One Way';
 
 try {
+    $rateTable = app_rate_table();
+    if (!isset($rateTable[$vehicle])) {
+        throw new RuntimeException('Selected cab type is not available.');
+    }
+
+    $rateInfo = $rateTable[$vehicle];
+    $vehicleLabel = (string) ($rateInfo['vehicle_name'] ?? $vehicle);
+    $tripDays = (string) max(1, (int) ($tripDays === '' ? '1' : $tripDays));
+    $travelDistance = $tripType === 'two-way' ? (float) $distanceKm * 2 : (float) $distanceKm;
+    $baseFareValue = $tripType === 'two-way' ? (float) $rateInfo['round_trip_base_fare'] : (float) $rateInfo['one_way_base_fare'];
+    $perKmValue = $tripType === 'two-way' ? (float) $rateInfo['round_trip_per_km'] : (float) $rateInfo['one_way_per_km'];
+    $baseFare = number_format($baseFareValue, 2, '.', '');
+    $perKm = number_format($perKmValue, 2, '.', '');
+    $distCharge = number_format($travelDistance * $perKmValue, 2, '.', '');
+    $driverAllowance = number_format(
+        $tripType === 'two-way'
+            ? (int) $tripDays * (float) $rateInfo['round_trip_driver_bata']
+            : (float) $rateInfo['one_way_driver_bata'],
+        2,
+        '.',
+        ''
+    );
+    $totalFare = number_format((float) $baseFare + (float) $distCharge + (float) $driverAllowance, 2, '.', '');
+
     $bookingRecord = store_booking(
         $name,
         $mobile,
@@ -192,7 +171,7 @@ try {
         $time,
         $vehicle,
         $tripType,
-        $tripDays === '' ? '1' : $tripDays,
+        $tripDays,
         $distanceKm,
         $baseFare,
         $perKm,
@@ -244,7 +223,7 @@ $htmlBody = '<!DOCTYPE html>
         <tr>
           <td>
             <p style="margin:0;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;">Selected Vehicle</p>
-            <p style="margin:6px 0 0;font-size:22px;font-weight:800;color:#ffc107;">' . htmlspecialchars($vehicle, ENT_QUOTES) . '</p>
+            <p style="margin:6px 0 0;font-size:22px;font-weight:800;color:#ffc107;">' . htmlspecialchars($vehicleLabel, ENT_QUOTES) . '</p>
             <p style="margin:4px 0 0;font-size:13px;color:rgba(255,255,255,0.5);">' . htmlspecialchars($tripTypeLabel, ENT_QUOTES) . '</p>
           </td>
           <td align="right">
@@ -367,7 +346,7 @@ $htmlBody .= '
 </html>';
 
 // ── Send to customer ─────────────────────────────────────────────────────────
-$subject = "Your {$businessName} Booking - {$vehicle} on {$date}";
+$subject = "Your {$businessName} Booking - {$vehicleLabel} on {$date}";
 $headers  = "MIME-Version: 1.0\r\n";
 $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 $headers .= "From: {$businessName} <{$smtpFrom}>\r\n";
@@ -377,7 +356,7 @@ $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
 $customerSent = @mail($email, $subject, $htmlBody, $headers);
 
 // ── Send copy to business ────────────────────────────────────────────────────
-$bizSubject  = "New Booking - {$vehicle} | {$name} | {$date} {$time}";
+$bizSubject  = "New Booking - {$vehicleLabel} | {$name} | {$date} {$time}";
 $bizHeaders  = "MIME-Version: 1.0\r\n";
 $bizHeaders .= "Content-Type: text/html; charset=UTF-8\r\n";
 $bizHeaders .= "From: {$businessName} Bookings <{$smtpFrom}>\r\n";

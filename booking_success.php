@@ -1,20 +1,9 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
 
 function booking_success_db(): mysqli
 {
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    $host = env_value('DB_HOST', 'localhost');
-    $name = env_value('DB_NAME', 'whitetaxi');
-    $user = env_value('DB_USER', 'root');
-    $pass = env_value('DB_PASS', '');
-    $port = (int) env_value('DB_PORT', '3307');
-
-    $db = new mysqli($host, $user, $pass, $name, $port);
-    $db->set_charset('utf8mb4');
-
-    return $db;
+    return app_db();
 }
 
 function booking_label(string $tripType, int $tripDays): string
@@ -29,6 +18,7 @@ function booking_label(string $tripType, int $tripDays): string
 $bookingId = trim((string) ($_GET['booking_id'] ?? ''));
 $booking = null;
 $pageError = '';
+$vehicleLabel = '';
 
 if ($bookingId === '') {
     $pageError = 'Booking ID is missing.';
@@ -50,6 +40,8 @@ if ($bookingId === '') {
 
         if ($booking === null) {
             $pageError = 'Booking not found.';
+        } else {
+            $vehicleLabel = app_vehicle_label((string) $booking['vehicle']);
         }
     } catch (Throwable $e) {
         $pageError = 'Unable to load booking details right now.';
@@ -114,7 +106,7 @@ if ($bookingId === '') {
                     </div>
                     <div>
                       <span class="summary-row-label">Vehicle :</span>
-                      <strong class="summary-row-value"><?= htmlspecialchars((string) $booking['vehicle'], ENT_QUOTES, 'UTF-8') ?></strong>
+                      <strong class="summary-row-value"><?= htmlspecialchars($vehicleLabel, ENT_QUOTES, 'UTF-8') ?></strong>
                     </div>
                   </div>
                   <div class="booking-summary-row">

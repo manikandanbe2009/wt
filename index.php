@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
 
 $todayDate = date('Y-m-d');
 
@@ -22,12 +22,7 @@ $bookingErrors = [];
 $bookingSuccess = '';
 $estimationResults = [];
 $googleMapsApiKey = env_value('GOOGLE_MAPS_API_KEY');
-$carRateTable = [
-    'SEDAN'  => ['base_fare' => 150, 'per_km' => 14, 'driver_allowance' => 300],
-    'ETIOS'  => ['base_fare' => 140, 'per_km' => 13, 'driver_allowance' => 300],
-    'SUV'    => ['base_fare' => 220, 'per_km' => 19, 'driver_allowance' => 400],
-    'INNOVA' => ['base_fare' => 260, 'per_km' => 20, 'driver_allowance' => 450],
-];
+$carRateTable = app_rate_table();
 $rateTableJson = htmlspecialchars(json_encode($carRateTable, JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
 
 function booking_value(array $data, string $key): string
@@ -98,14 +93,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         foreach ($vehiclesToEstimate as $vehicleName => $rateInfo) {
             $travelDistance  = $bookingData['trip_type'] === 'two-way' ? $distanceKm * 2 : $distanceKm;
-            $distanceFare    = $travelDistance * $rateInfo['per_km'];
-            $driverAllowance = $bookingData['trip_type'] === 'two-way' ? $tripDays * $rateInfo['driver_allowance'] : 0;
-            $estimatedFare   = $rateInfo['base_fare'] + $distanceFare + $driverAllowance;
+            $baseFareValue   = $bookingData['trip_type'] === 'two-way' ? $rateInfo['round_trip_base_fare'] : $rateInfo['one_way_base_fare'];
+            $perKmValue      = $bookingData['trip_type'] === 'two-way' ? $rateInfo['round_trip_per_km'] : $rateInfo['one_way_per_km'];
+            $distanceFare    = $travelDistance * $perKmValue;
+            $driverAllowance = $bookingData['trip_type'] === 'two-way'
+                ? $tripDays * $rateInfo['round_trip_driver_bata']
+                : $rateInfo['one_way_driver_bata'];
+            $estimatedFare   = $baseFareValue + $distanceFare + $driverAllowance;
 
             $estimationResults[] = [
                 'vehicle'        => $vehicleName,
-                'base_fare'      => $rateInfo['base_fare'],
-                'per_km'         => $rateInfo['per_km'],
+                'vehicle_name'   => $rateInfo['vehicle_name'],
+                'base_fare'      => $baseFareValue,
+                'per_km'         => $perKmValue,
                 'driver_allowance' => $driverAllowance,
                 'travel_distance'  => $travelDistance,
                 'estimated_fare'   => $estimatedFare,
@@ -214,18 +214,17 @@ $selectedEstimation = $estimationResults[0] ?? null;
                   <article
                     class="estimate-card"
                     data-vehicle="<?= htmlspecialchars($estimation['vehicle'], ENT_QUOTES, 'UTF-8') ?>"
+                    data-vehicle-name="<?= htmlspecialchars($estimation['vehicle_name'], ENT_QUOTES, 'UTF-8') ?>"
                     data-base-fare="<?= htmlspecialchars((string) $estimation['base_fare'], ENT_QUOTES, 'UTF-8') ?>"
                     data-per-km="<?= htmlspecialchars((string) $estimation['per_km'], ENT_QUOTES, 'UTF-8') ?>"
                     data-driver-allowance="<?= htmlspecialchars((string) $estimation['driver_allowance'], ENT_QUOTES, 'UTF-8') ?>"
                     data-travel-distance="<?= htmlspecialchars((string) $estimation['travel_distance'], ENT_QUOTES, 'UTF-8') ?>"
                     data-estimated-fare="<?= htmlspecialchars((string) $estimation['estimated_fare'], ENT_QUOTES, 'UTF-8') ?>"
                   >
-                    <div class="estimate-top"><h4><?= htmlspecialchars($estimation['vehicle'], ENT_QUOTES, 'UTF-8') ?></h4></div>
+                    <div class="estimate-top"><h4><?= htmlspecialchars($estimation['vehicle_name'], ENT_QUOTES, 'UTF-8') ?></h4></div>
                     <p class="estimate-price">Rs. <?= number_format($estimation['estimated_fare'], 0) ?></p>
                     <p class="estimate-meta">Base Rs. <?= number_format($estimation['base_fare'], 0) ?> + <?= number_format($estimation['travel_distance'], 1) ?> km x Rs. <?= number_format($estimation['per_km'], 0) ?></p>
-                    <?php if ($estimation['driver_allowance'] > 0): ?>
-                      <p class="estimate-meta">Driver allowance included: Rs. <?= number_format($estimation['driver_allowance'], 0) ?></p>
-                    <?php endif; ?>
+                    <p class="estimate-meta">Driver Bata: Rs. <?= number_format($estimation['driver_allowance'], 0) ?></p>
                     <button class="estimate-select-btn" type="button">Confirm Cab &rarr;</button>
                   </article>
                 <?php endforeach; ?>
@@ -283,7 +282,7 @@ $selectedEstimation = $estimationResults[0] ?? null;
                     <span class="summary-row-label">Estimated Fare :</span>
                     <strong class="summary-row-value" id="summary-estimated-fare">-</strong>
                   </div>
-                  <div class="booking-summary-row booking-summary-row-total" id="summary-allowance-row" hidden>
+                  <div class="booking-summary-row booking-summary-row-total" id="summary-allowance-row">
                     <span class="summary-row-label">Driver Bata :</span>
                     <strong class="summary-row-value" id="summary-driver-allowance">-</strong>
                   </div>
@@ -402,10 +401,9 @@ $selectedEstimation = $estimationResults[0] ?? null;
                   <label for="cabtype">Select Cab Type</label>
                   <select id="cabtype" name="cabtype" required>
                     <option value="">-- Choose Cab Type --</option>
-                    <option value="SEDAN" <?= booking_value($bookingData, 'cabtype') === 'SEDAN' ? 'selected' : '' ?>>Sedan</option>
-                    <option value="ETIOS" <?= booking_value($bookingData, 'cabtype') === 'ETIOS' ? 'selected' : '' ?>>Etios</option>
-                    <option value="SUV" <?= booking_value($bookingData, 'cabtype') === 'SUV' ? 'selected' : '' ?>>SUV</option>
-                    <option value="INNOVA" <?= booking_value($bookingData, 'cabtype') === 'INNOVA' ? 'selected' : '' ?>>Innova</option>
+                    <?php foreach ($carRateTable as $vehicleCode => $rateInfo): ?>
+                      <option value="<?= htmlspecialchars($vehicleCode, ENT_QUOTES, 'UTF-8') ?>" <?= booking_value($bookingData, 'cabtype') === $vehicleCode ? 'selected' : '' ?>><?= htmlspecialchars($rateInfo['vehicle_name'], ENT_QUOTES, 'UTF-8') ?></option>
+                    <?php endforeach; ?>
                   </select>
                   <?php if (isset($bookingErrors['cabtype'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['cabtype'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                 </div>
@@ -817,8 +815,8 @@ $selectedEstimation = $estimationResults[0] ?? null;
         ? `Round Trip (${p.trip_days} day${p.trip_days !== '1' ? 's' : ''})`
         : 'One Way';
       const allowanceLine = Number(p.driver_allowance) > 0
-        ? `\nDriver Allowance : ${inr(p.driver_allowance)}` : '';
-      const msg = `🚖 *New Booking – White Call Taxi*\n\n*Vehicle :* ${p.vehicle}\n*Trip    :* ${tripLabel}\n\n👤 *Passenger*\nName   : ${p.name}\nMobile : ${p.mobile}\nEmail  : ${p.email}\n\n📍 *Journey*\nPickup   : ${p.pickup}\nDrop     : ${p.drop}\nDistance : ${p.distance_km} km\nDate     : ${p.date}  |  Time : ${p.time}\n\n💰 *Fare Breakdown*\nBase Fare       : ${inr(p.base_fare)}\nDistance Charge : ${inr(p.dist_charge)}  (${p.distance_km} km × Rs.${p.per_km}/km)${allowanceLine}\n*TOTAL          : ${inr(p.total_fare)}*`;
+        ? `\nDriver Bata : ${inr(p.driver_allowance)}` : '';
+      const msg = `🚖 *New Booking – White Call Taxi*\n\n*Vehicle :* ${p.vehicle_name || p.vehicle}\n*Trip    :* ${tripLabel}\n\n👤 *Passenger*\nName   : ${p.name}\nMobile : ${p.mobile}\nEmail  : ${p.email}\n\n📍 *Journey*\nPickup   : ${p.pickup}\nDrop     : ${p.drop}\nDistance : ${p.distance_km} km\nDate     : ${p.date}  |  Time : ${p.time}\n\n💰 *Fare Breakdown*\nBase Fare       : ${inr(p.base_fare)}\nDistance Charge : ${inr(p.dist_charge)}  (${p.distance_km} km × Rs.${p.per_km}/km)${allowanceLine}\n*TOTAL          : ${inr(p.total_fare)}*`;
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
     };
 
@@ -902,7 +900,8 @@ $selectedEstimation = $estimationResults[0] ?? null;
           drop: details.drop,
           date: details.date,
           time: details.time,
-          vehicle: item.vehicle,
+          vehicle: item.vehicleCode,
+          vehicle_name: item.vehicleName,
           trip_type: details.tripType,
           trip_days: String(details.tripDays),
           distance_km: item.travelDistance.toFixed(1),
@@ -913,7 +912,7 @@ $selectedEstimation = $estimationResults[0] ?? null;
           total_fare: String(Math.round(item.estimatedFare)),
         };
 
-        document.getElementById('summary-vehicle-name').textContent = item.vehicle;
+        document.getElementById('summary-vehicle-name').textContent = item.vehicleName;
         document.getElementById('summary-name').textContent = details.name;
         document.getElementById('summary-mobile').textContent = details.mobile;
         document.getElementById('summary-pickup').textContent = details.pickup;
@@ -925,13 +924,7 @@ $selectedEstimation = $estimationResults[0] ?? null;
         document.getElementById('summary-estimated-fare').textContent = inr(estimatedFare);
         document.getElementById('summary-total-fare').textContent = inr(item.estimatedFare);
 
-        const allowanceRow = document.getElementById('summary-allowance-row');
-        if (item.driverAllowance > 0) {
-          document.getElementById('summary-driver-allowance').textContent = inr(item.driverAllowance);
-          allowanceRow.hidden = false;
-        } else {
-          allowanceRow.hidden = true;
-        }
+        document.getElementById('summary-driver-allowance').textContent = inr(item.driverAllowance);
 
         renderSummaryStatus(summarySuccessMsg, '');
         renderSummaryStatus(summaryErrorMsg, '');
@@ -1005,10 +998,10 @@ $selectedEstimation = $estimationResults[0] ?? null;
           const card = document.createElement('article');
           card.className = 'estimate-card';
           card.innerHTML = `
-            <div class="estimate-top"><h4>${item.vehicle}</h4></div>
+            <div class="estimate-top"><h4>${item.vehicleName}</h4></div>
             <p class="estimate-price">${inr(item.estimatedFare)}</p>
             <p class="estimate-meta">Base ${inr(item.baseFare)} + ${item.travelDistance.toFixed(1)} km &times; Rs.${Math.round(item.perKm)}</p>
-            ${item.driverAllowance > 0 ? `<p class="estimate-meta">Driver allowance: ${inr(item.driverAllowance)}</p>` : ''}
+            <p class="estimate-meta">Driver Bata: ${inr(item.driverAllowance)}</p>
             <button class="estimate-select-btn" type="button">Confirm Cab &rarr;</button>
           `;
 
@@ -1059,9 +1052,13 @@ $selectedEstimation = $estimationResults[0] ?? null;
           return selectedCabType === '' || vehicle === selectedCabType;
         }).map(([vehicle, r]) => {
           const travelDistance  = tripType === 'two-way' ? distanceKm * 2 : distanceKm;
-          const driverAllowance = tripType === 'two-way' ? tripDays * Number(r.driver_allowance || 0) : 0;
-          const estimatedFare   = Number(r.base_fare || 0) + travelDistance * Number(r.per_km || 0) + driverAllowance;
-          return { vehicle, baseFare: Number(r.base_fare || 0), perKm: Number(r.per_km || 0), driverAllowance, travelDistance, estimatedFare };
+          const driverAllowance = tripType === 'two-way'
+            ? tripDays * Number(r.round_trip_driver_bata || 0)
+            : Number(r.one_way_driver_bata || 0);
+          const baseFare = tripType === 'two-way' ? Number(r.round_trip_base_fare || 0) : Number(r.one_way_base_fare || 0);
+          const perKm = tripType === 'two-way' ? Number(r.round_trip_per_km || 0) : Number(r.one_way_per_km || 0);
+          const estimatedFare   = baseFare + travelDistance * perKm + driverAllowance;
+          return { vehicleCode: vehicle, vehicleName: r.vehicle_name || vehicle, baseFare, perKm, driverAllowance, travelDistance, estimatedFare };
         }).sort((a, b) => a.estimatedFare - b.estimatedFare);
         renderEstimationResults(rows, distanceKm, tripType, tripDays);
       };
@@ -1118,7 +1115,7 @@ $selectedEstimation = $estimationResults[0] ?? null;
             currentBookingPayload.booking_id = json.booking_id || '';
             document.getElementById('summary-booking-id').textContent = json.booking_id || '-';
             document.getElementById('summary-confirm-name').textContent = currentBookingPayload.name || '-';
-            document.getElementById('summary-confirm-vehicle').textContent = currentBookingPayload.vehicle || '-';
+            document.getElementById('summary-confirm-vehicle').textContent = currentBookingPayload.vehicle_name || currentBookingPayload.vehicle || '-';
             document.getElementById('summary-confirm-fare').textContent = inr(currentBookingPayload.total_fare || 0);
 
             confirmationBox?.classList.remove('is-hidden');
@@ -1148,7 +1145,8 @@ $selectedEstimation = $estimationResults[0] ?? null;
         const button = card.querySelector('.estimate-select-btn');
         if (!button) return;
         const item = {
-          vehicle: card.dataset.vehicle || card.querySelector('h4')?.textContent || '',
+          vehicleCode: card.dataset.vehicle || '',
+          vehicleName: card.dataset.vehicleName || card.querySelector('h4')?.textContent || '',
           baseFare: Number(card.dataset.baseFare || 0),
           perKm: Number(card.dataset.perKm || 0),
           driverAllowance: Number(card.dataset.driverAllowance || 0),
