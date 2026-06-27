@@ -67,12 +67,21 @@ function booking_db(): mysqli
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
     $host = env_value('DB_HOST', 'localhost');
-    $name = env_value('DB_NAME', 'sivam_taxi');
+    $name = env_value('DB_NAME', 'whitetaxi');
     $user = env_value('DB_USER', 'root');
     $pass = env_value('DB_PASS', '');
-    $port = (int) env_value('DB_PORT', '3306');
+    $port = (int) env_value('DB_PORT', '3307');
 
-    $db = new mysqli($host, $user, $pass, $name, $port);
+    $server = new mysqli($host, $user, $pass, '', $port);
+    $server->set_charset('utf8mb4');
+    $server->query(
+        sprintf(
+            'CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci',
+            $server->real_escape_string($name)
+        )
+    );
+    $server->select_db($name);
+    $db = $server;
     $db->set_charset('utf8mb4');
     $db->query(
         'CREATE TABLE IF NOT EXISTS website_bookings (
@@ -198,6 +207,7 @@ try {
 }
 
 $bookingCode = $bookingRecord['booking_code'];
+$successUrl = 'booking_success.php?booking_id=' . rawurlencode($bookingCode);
 
 // ── HTML email body ──────────────────────────────────────────────────────────
 $htmlBody = '<!DOCTYPE html>
@@ -396,6 +406,7 @@ ob_clean(); // discard any stray output before final response
 echo json_encode([
     'success'       => true,
     'booking_id'    => $bookingCode,
+    'success_url'   => $successUrl,
     'customer_sent' => (bool) $customerSent,
     'business_sent' => (bool) $businessSent,
     'message'       => 'Booking saved successfully.',

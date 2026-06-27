@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/config.php';
 
+$todayDate = date('Y-m-d');
+
 $defaultBookingData = [
     'trip_type' => 'one-way',
     'name' => '',
@@ -10,7 +12,7 @@ $defaultBookingData = [
     'pickup' => '',
     'drop' => '',
     'distance_km' => '',
-    'date' => '2026-05-25',
+    'date' => $todayDate,
     'time' => '10:00',
     'cabtype' => '',
 ];
@@ -74,6 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($bookingData['date'] === '') {
         $bookingErrors['date'] = 'Select a date.';
+    } elseif ($bookingData['date'] < $todayDate) {
+        $bookingErrors['date'] = 'Past dates are not allowed.';
     }
     if ($bookingData['time'] === '') {
         $bookingErrors['time'] = 'Select a time.';
@@ -385,7 +389,7 @@ $selectedEstimation = $estimationResults[0] ?? null;
                 <div class="field-row field-row-compact">
                   <div class="field">
                     <label for="date">Date</label>
-                    <input id="date" name="date" type="date" value="<?= booking_value($bookingData, 'date') ?>" required>
+                    <input id="date" name="date" type="date" min="<?= htmlspecialchars($todayDate, ENT_QUOTES, 'UTF-8') ?>" value="<?= booking_value($bookingData, 'date') ?>" required>
                     <?php if (isset($bookingErrors['date'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['date'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                   <div class="field">
@@ -1125,6 +1129,10 @@ $selectedEstimation = $estimationResults[0] ?? null;
             if (json.booking_id) successParts.push(`Booking ID: ${json.booking_id}`);
             if (!json.customer_sent || !json.business_sent) successParts.push('Email delivery is pending, but the booking is stored.');
             renderSummaryStatus(summarySuccessMsg, successParts.join(' '));
+
+            if (json.success_url) {
+              window.location.href = json.success_url;
+            }
           } catch (err) {
             renderSummaryStatus(summaryErrorMsg, err.message || 'Could not save the booking. Please try again.');
             summaryConfirmLabel.hidden = false;
