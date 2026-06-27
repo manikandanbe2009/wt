@@ -1,9 +1,22 @@
+<?php
+require_once __DIR__ . '/seo.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>White Call Taxi</title>
+  <?php
+  app_seo_render([
+      'title' => 'About White Call Taxi | Safe and Reliable Taxi Service',
+      'description' => 'Learn about White Call Taxi, our verified drivers, clean vehicles and reliable taxi support for airport, city, outstation and corporate travel.',
+      'path' => '/about.php',
+      'image' => 'images/about-us-image.png',
+      'type' => 'article',
+      'headline' => 'About White Call Taxi and our trusted travel service',
+      'schema_type' => 'AboutPage',
+  ]);
+  ?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -295,72 +308,7 @@
    
   </main>
 
-  <footer id="contact">
-    <div class="container">
-      <div class="footer-shell glass">
-        <div class="footer-brand">
-          <a class="brand footer-brand-row" href="#home" aria-label="White Call Taxi">
-            <img class="brand-mark footer-logo brand-mark-photo" src="images/logo.png" alt="White Call Taxi logo">
-            <div class="brand-copy footer-copy">
-              <strong>WHITE CALL TAXI</strong>
-              <span>Premium Taxi Service</span>
-            </div>
-          </a>
-          <p class="footer-text">We provide premium taxi services with comfort, safety and reliability.</p>
-          <div class="socials">
-            <a href="#">Fb</a>
-            <a href="#">X</a>
-            <a href="#">Ig</a>
-            <a href="#">In</a>
-          </div>
-        </div>
-
-        <div class="footer-col">
-          <h4>Quick Links</h4>
-          <nav>
-            <a href="#home">Home</a>
-            <a href="#about">About Us</a>
-            <a href="#fleet">Our Fleet</a>
-            <a href="#services">Services</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#contact">Contact Us</a>
-          </nav>
-        </div>
-
-        <div class="footer-col">
-          <h4>Our Services</h4>
-          <nav>
-            <a href="#services">Airport Transfers</a>
-            <a href="#services">City Rides</a>
-            <a href="#services">Outstation</a>
-            <a href="#services">Hourly Rentals</a>
-            <a href="#services">Corporate Travel</a>
-          </nav>
-        </div>
-
-        <div class="footer-col">
-          <h4>Contact Us</h4>
-          <nav>
-            <p>123, MG Road, City Center, New York, USA - 10001</p>
-            <a href="tel:+911234567890">+91 12345 67890</a>
-            <a href="mailto:info@whitecalltaxi.com">info@whitecalltaxi.com</a>
-            <a href="#">www.whitecalltaxi.com</a>
-          </nav>
-        </div>
-
-      </div>
-
-      <div class="footer-bottom">
-        <div>&copy; 2026 White Call Taxi. All Rights Reserved.</div>
-        <div>
-          <a href="#">Terms &amp; Conditions</a>
-          <a href="#">Cancellation</a>
-          <a href="#">Refund</a>
-          <a href="#">Privacy Policy</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <?php require __DIR__ . '/site-footer.php'; ?>
 
   <script>
    

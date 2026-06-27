@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/seo.php';
 
 function booking_success_db(): mysqli
 {
@@ -53,7 +54,18 @@ if ($bookingId === '') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booking Confirmed | White Call Taxi</title>
+  <?php
+  app_seo_render([
+      'title' => 'Booking Confirmed | White Call Taxi',
+      'description' => 'White Call Taxi booking confirmation details.',
+      'path' => '/booking_success.php',
+      'image' => 'images/logo.png',
+      'type' => 'website',
+      'headline' => 'Taxi booking confirmation',
+      'schema_type' => 'WebPage',
+      'robots' => 'noindex, nofollow',
+  ]);
+  ?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">

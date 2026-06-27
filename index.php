@@ -1,7 +1,10 @@
 <?php
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/seo.php';
+require_once __DIR__ . '/route-data.php';
 
 $todayDate = date('Y-m-d');
+$selectedRoute = isset($selectedRoute) && is_array($selectedRoute) ? $selectedRoute : null;
 
 $defaultBookingData = [
     'trip_type' => 'one-way',
@@ -9,8 +12,8 @@ $defaultBookingData = [
     'mobile' => '',
     'email' => '',
     'trip_days' => '',
-    'pickup' => '',
-    'drop' => '',
+    'pickup' => $selectedRoute['pickup'] ?? '',
+    'drop' => $selectedRoute['drop'] ?? '',
     'distance_km' => '',
     'date' => $todayDate,
     'time' => '10:00',
@@ -117,13 +120,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $selectedEstimation = $estimationResults[0] ?? null;
+$pageTitle = $selectedRoute['title'] ?? 'White Call Taxi | Airport, Outstation, City & Corporate Taxi Booking';
+$pageDescription = $selectedRoute['description'] ?? 'Book White Call Taxi for safe airport transfers, city rides, outstation trips and corporate travel with transparent pricing and 24/7 support.';
+$pagePath = '/' . (($selectedRoute['slug'] ?? 'index') . '.php');
+$pageHeadline = $selectedRoute['headline'] ?? 'Taxi booking for airport, city, outstation and corporate travel';
+$heroEyebrow = $selectedRoute['hero_eyebrow'] ?? 'Travel In Style, Arrive In Comfort';
+$heroTitle = $selectedRoute['hero_title'] ?? 'Premium <span class="accent">Rides.</span><br>Every <span class="accent">Time.</span>';
+$heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provides safe, reliable and luxurious rides anytime, anywhere with airport-ready pickups, city travel and corporate booking support.';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>White Call Taxi</title>
+  <?php
+  app_seo_render([
+      'title' => $pageTitle,
+      'description' => $pageDescription,
+      'path' => $pagePath,
+      'image' => 'images/hero-banner-image.png',
+      'type' => 'website',
+      'headline' => $pageHeadline,
+      'schema_type' => 'Service',
+      'service_name' => $selectedRoute
+          ? ($selectedRoute['pickup'] . ' to ' . $selectedRoute['drop'] . ' taxi booking')
+          : 'Airport, city, outstation and corporate taxi booking',
+  ]);
+  ?>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -176,9 +199,9 @@ $selectedEstimation = $estimationResults[0] ?? null;
       <div class="container">
         <div class="hero-shell">
           <div class="hero-left">
-            <p class="eyebrow">Travel In Style, Arrive In Comfort</p>
-            <h1>Premium <span class="accent">Rides.</span><br>Every <span class="accent">Time.</span></h1>
-            <p>White Call Taxi provides safe, reliable and luxurious rides anytime, anywhere with airport-ready pickups, city travel and corporate booking support.</p>
+            <p class="eyebrow"><?= htmlspecialchars($heroEyebrow, ENT_QUOTES, 'UTF-8') ?></p>
+            <h1><?= $heroTitle ?></h1>
+            <p><?= htmlspecialchars($heroDescription, ENT_QUOTES, 'UTF-8') ?></p>
             <div class="hero-benefits">
               <div class="benefit">
                 <div class="icon-badge"><i class="bi bi-shield-check"></i></div>
@@ -340,39 +363,35 @@ $selectedEstimation = $estimationResults[0] ?? null;
 
                 <div class="field-row field-row-compact">
                   <div class="field">
-                    <label for="name">Name</label>
+                    <!-- <label for="name">Name</label> -->
                     <input id="name" name="name" type="text" placeholder="Enter your name" value="<?= booking_value($bookingData, 'name') ?>" required>
                     <?php if (isset($bookingErrors['name'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['name'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                   <div class="field">
-                    <label for="mobile">Mobile Number</label>
+                    <!-- <label for="mobile">Mobile Number</label> -->
                     <input id="mobile" name="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" pattern="[6-9][0-9]{9}" value="<?= booking_value($bookingData, 'mobile') ?>" required>
                     <?php if (isset($bookingErrors['mobile'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['mobile'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                 </div>
 
                 <div class="field">
-                  <label for="email">Email</label>
+                  <!-- <label for="email">Email</label> -->
                   <input id="email" name="email" type="email" placeholder="Enter your email address" value="<?= booking_value($bookingData, 'email') ?>" required>
                   <?php if (isset($bookingErrors['email'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['email'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                 </div>
 
-                <div class="field trip-days-field" id="trip-days-field" <?= $bookingData['trip_type'] !== 'two-way' ? 'hidden' : '' ?>>
-                  <label for="trip-days">Days</label>
-                  <input id="trip-days" name="trip_days" type="number" min="1" max="30" placeholder="Enter number of days" value="<?= booking_value($bookingData, 'trip_days') ?>">
-                  <?php if (isset($bookingErrors['trip_days'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['trip_days'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
-                </div>
+                
 
                 <div class="field-row field-row-compact">
                   <div class="field">
-                    <label for="pickup">Pickup Location</label>
+                    <!-- <label for="pickup">Pickup Location</label> -->
                     <input id="pickup" name="pickup" type="text" placeholder="Enter pickup location" value="<?= booking_value($bookingData, 'pickup') ?>" autocomplete="off" required>
                     <input id="pickup-lat" type="hidden">
                     <input id="pickup-lng" type="hidden">
                     <?php if (isset($bookingErrors['pickup'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['pickup'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                   <div class="field">
-                    <label for="drop">Drop Location</label>
+                    <!-- <label for="drop">Drop Location</label> -->
                     <input id="drop" name="drop" type="text" placeholder="Enter drop location" value="<?= booking_value($bookingData, 'drop') ?>" autocomplete="off" required>
                     <input id="drop-lat" type="hidden">
                     <input id="drop-lng" type="hidden">
@@ -387,25 +406,33 @@ $selectedEstimation = $estimationResults[0] ?? null;
 
                 <div class="field-row field-row-compact">
                   <div class="field">
-                    <label for="date">Date</label>
+                    <!-- <label for="date">Date</label> -->
                     <input id="date" name="date" type="date" min="<?= htmlspecialchars($todayDate, ENT_QUOTES, 'UTF-8') ?>" value="<?= booking_value($bookingData, 'date') ?>" required>
                     <?php if (isset($bookingErrors['date'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['date'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                   <div class="field">
-                    <label for="time">Time</label>
+                    <!-- <label for="time">Time</label> -->
                     <input id="time" name="time" type="time" value="<?= booking_value($bookingData, 'time') ?>" required>
                     <?php if (isset($bookingErrors['time'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['time'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                 </div>
+              
+                <div class="field-row field-row-compact">
+                    <div class="field trip-days-field" id="trip-days-field" <?= $bookingData['trip_type'] !== 'two-way' ? 'hidden' : '' ?>>
+                  <!-- <label for="trip-days">Days</label> -->
+                  <input id="trip-days" name="trip_days" type="number" min="1" max="30" placeholder="Enter number of days" value="<?= booking_value($bookingData, 'trip_days') ?>">
+                  <?php if (isset($bookingErrors['trip_days'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['trip_days'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
+                </div>
                 <div class="field">
-                  <label for="cabtype">Select Cab Type</label>
+                  <!-- <label for="cabtype">Select Cab Type</label> -->
                   <select id="cabtype" name="cabtype" required>
-                    <option value="">-- Choose Cab Type --</option>
+                    <option value="">-- Select vehicle type --</option>
                     <?php foreach ($carRateTable as $vehicleCode => $rateInfo): ?>
                       <option value="<?= htmlspecialchars($vehicleCode, ENT_QUOTES, 'UTF-8') ?>" <?= booking_value($bookingData, 'cabtype') === $vehicleCode ? 'selected' : '' ?>><?= htmlspecialchars($rateInfo['vehicle_name'], ENT_QUOTES, 'UTF-8') ?></option>
                     <?php endforeach; ?>
                   </select>
                   <?php if (isset($bookingErrors['cabtype'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['cabtype'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
+                </div>
                 </div>
 
 
@@ -730,72 +757,7 @@ $selectedEstimation = $estimationResults[0] ?? null;
     </section>
   </main>
 
-  <footer id="contact">
-    <div class="container">
-      <div class="footer-shell glass">
-        <div class="footer-brand">
-          <a class="brand footer-brand-row" href="#home" aria-label="White Call Taxi">
-            <img class="brand-mark footer-logo brand-mark-photo" src="images/logo.png" alt="White Call Taxi logo">
-            <div class="brand-copy footer-copy">
-              <strong>WHITE CALL TAXI</strong>
-              <span>Premium Taxi Service</span>
-            </div>
-          </a>
-          <p class="footer-text">We provide premium taxi services with comfort, safety and reliability.</p>
-          <div class="socials">
-            <a href="#">Fb</a>
-            <a href="#">X</a>
-            <a href="#">Ig</a>
-            <a href="#">In</a>
-          </div>
-        </div>
-
-        <div class="footer-col">
-          <h4>Quick Links</h4>
-          <nav>
-            <a href="#home">Home</a>
-            <a href="#about">About Us</a>
-            <a href="#fleet">Our Fleet</a>
-            <a href="#services">Services</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#contact">Contact Us</a>
-          </nav>
-        </div>
-
-        <div class="footer-col">
-          <h4>Our Services</h4>
-          <nav>
-            <a href="#services">Airport Transfers</a>
-            <a href="#services">City Rides</a>
-            <a href="#services">Outstation</a>
-            <a href="#services">Hourly Rentals</a>
-            <a href="#services">Corporate Travel</a>
-          </nav>
-        </div>
-
-        <div class="footer-col">
-          <h4>Contact Us</h4>
-          <nav>
-            <p>123, MG Road, City Center, New York, USA - 10001</p>
-            <a href="tel:+911234567890">+91 12345 67890</a>
-            <a href="mailto:info@whitecalltaxi.com">info@whitecalltaxi.com</a>
-            <a href="#">www.whitecalltaxi.com</a>
-          </nav>
-        </div>
-
-      </div>
-
-      <div class="footer-bottom">
-        <div>&copy; 2026 White Call Taxi. All Rights Reserved.</div>
-        <div>
-          <a href="#">Terms &amp; Conditions</a>
-          <a href="#">Cancellation</a>
-          <a href="#">Refund</a>
-          <a href="#">Privacy Policy</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  <?php require __DIR__ . '/site-footer.php'; ?>
 
   <script>
     // ── CONFIG ─────────────────────────────────────────────────────────────

@@ -5,17 +5,17 @@
   --glass-gradient: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.98) 0%,
-    rgba(248, 250, 255, 0.96) 52%,
-    rgba(241, 246, 255, 0.94) 100%
+    rgba(255, 251, 236, 0.97) 52%,
+    rgba(255, 247, 214, 0.95) 100%
   );
-  --line: rgba(25, 54, 112, 0.12);
-  --text: #10233f;
-  --muted: #4f6282;
-  --primary: #feb027;
-  --primary-2: #ffb84d;
-  --secondary: #f1e9da;
-  --secondary-2: #f5e9d8;
-  --shadow: 0 24px 60px rgba(31, 54, 107, 0.12);
+  --line: rgba(109, 82, 14, 0.14);
+  --text: #342305;
+  --muted: #6d5a2c;
+  --primary: #f4c542;
+  --primary-2: #ffdc73;
+  --secondary: #fff7dc;
+  --secondary-2: #fff3c4;
+  --shadow: 0 24px 60px rgba(135, 103, 18, 0.12);
   --radius-xl: 32px;
   --radius-lg: 24px;
   --radius-md: 18px;
@@ -38,9 +38,9 @@ body {
   font-family: "Manrope", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at 12% 10%, rgba(204, 222, 255, 0.65), transparent 20%),
-    radial-gradient(circle at 88% 8%, rgba(221, 235, 255, 0.58), transparent 18%),
-    linear-gradient(180deg, #ffffff 0%, #f8fbff 46%, #eef4ff 100%);
+    radial-gradient(circle at 12% 10%, rgba(255, 226, 102, 0.32), transparent 20%),
+    radial-gradient(circle at 88% 8%, rgba(247, 200, 55, 0.2), transparent 18%),
+    linear-gradient(180deg, #fffdfa 0%, #fffaf0 46%, #fff7e5 100%);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -60,13 +60,13 @@ body::after {
 body::before {
   top: -120px;
   left: -100px;
-  background: rgba(179, 209, 255, 0.42);
+  background: rgba(255, 224, 120, 0.3);
 }
 
 body::after {
   top: 120px;
   right: -110px;
-  background: rgba(216, 232, 255, 0.55);
+  background: rgba(255, 244, 194, 0.6);
 }
 
 .pac-container {
@@ -100,7 +100,7 @@ select {
 
 .glass {
   background: var(--glass-gradient);
-  border: 1px solid rgba(198, 212, 236, 0.72);
+  border: 1px solid rgba(231, 203, 113, 0.5);
   box-shadow: var(--shadow);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -128,9 +128,9 @@ select {
     rgba(255, 255, 255, 0.8) 0%,
     rgba(255, 255, 255, 0.8) 100%
   ); */
-  background: var(--primary);
-  border: 1px solid rgba(197, 212, 238, 0.9);
-  box-shadow: 0 14px 34px rgba(34, 51, 94, 0.08);
+  background: rgba(247, 210, 1, 0.94);
+  border: 1px solid rgba(231, 203, 113, 0.7);
+  box-shadow: 0 14px 34px rgba(135, 103, 18, 0.08);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
@@ -194,8 +194,8 @@ select {
 
 .nav-links a.active,
 .nav-links a:hover {
-  background: rgb(246, 247, 249);
-  color: var(--black);
+  background: rgba(244, 197, 66, 0.16);
+  color: var(--text);
   border-radius: 12px;
 }
 
@@ -204,9 +204,9 @@ select {
   width: 46px;
   height: 46px;
   padding: 0;
-  border: 1px solid rgba(178, 197, 228, 0.9);
+  border: 1px solid rgba(231, 203, 113, 0.9);
   border-radius: 14px;
-  background: #feb027;
+  background: #fff5cf;
   align-items: center;
   justify-content: center;
   justify-self: end;
@@ -267,9 +267,9 @@ select {
 }
 
 .button-primary {
-  color: var(--black);
-  background: linear-gradient(135deg, var(--secondary), var(--secondary-2));
-  box-shadow: 0 14px 30px rgba(34, 86, 216, 0.26);
+  color: #2d2004;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  box-shadow: 0 14px 30px rgba(203, 154, 23, 0.28);
 }
 
 .nav-cta .button-primary {
@@ -281,8 +281,8 @@ select {
 
 .button-secondary {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 12px 28px rgba(49, 68, 112, 0.1);
+  background: rgba(255, 251, 239, 0.96);
+  box-shadow: 0 12px 28px rgba(120, 92, 25, 0.1);
 }
 
 .hero {
@@ -316,8 +316,8 @@ select {
     ),
     linear-gradient(
       135deg,
-      rgba(157, 199, 255, 0.24) 0%,
-      rgba(205, 227, 255, 0.18) 48%,
+      rgba(255, 228, 128, 0.22) 0%,
+      rgba(255, 242, 186, 0.18) 48%,
       rgba(255, 255, 255, 0.2) 100%
     );
   z-index: 1;
@@ -330,7 +330,7 @@ select {
   background:
     radial-gradient(
       circle at 62% 35%,
-      rgba(138, 182, 255, 0.22),
+      rgba(247, 204, 62, 0.18),
       transparent 18%
     ),
     radial-gradient(
@@ -377,8 +377,8 @@ select {
       ),
       linear-gradient(
         135deg,
-        rgba(124, 60, 255, 0.32),
-        rgba(255, 210, 245, 0.36)
+        rgba(244, 197, 66, 0.16),
+        rgba(255, 240, 189, 0.28)
       );
   }
 }
@@ -403,7 +403,7 @@ select {
   text-transform: uppercase;
   letter-spacing: 0.34em;
   font-size: 0.77rem;
-  color: #244a8f;
+  color: #966c06;
   font-weight: 800;
 }
 
@@ -425,7 +425,7 @@ select {
   max-width: 490px;
   font-size: 1rem;
   line-height: 1.8;
-  color: #314863;
+  color: #5f5029;
 }
 
 .hero-actions {
@@ -443,7 +443,7 @@ select {
   display: inline-grid;
   place-items: center;
   color: var(--primary);
-  background: rgba(122, 77, 255, 0.12);
+  background: rgba(244, 197, 66, 0.16);
   font-size: 0.8rem;
 }
 
@@ -457,8 +457,8 @@ select {
   padding: 18px 22px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(202, 217, 241, 0.85);
-  box-shadow: 0 18px 42px rgba(34, 44, 92, 0.09);
+  border: 1px solid rgba(233, 208, 128, 0.85);
+  box-shadow: 0 18px 42px rgba(135, 103, 18, 0.09);
   backdrop-filter: blur(6px);
 }
 
@@ -861,6 +861,29 @@ a:focus-visible {
   padding: 12px 0 34px;
 }
 
+.stats,
+.section,
+.fleet-section,
+.mission-section,
+.process-section,
+.contact-section,
+.about-intro,
+.why-section {
+  position: relative;
+}
+
+.stats .container,
+.section .container,
+.fleet-section .container,
+.mission-section .container,
+.process-section .container,
+.contact-section .container,
+.about-intro .container,
+.why-section .container {
+  position: relative;
+  z-index: 1;
+}
+
 .stats-shell {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -877,7 +900,7 @@ a:focus-visible {
 }
 
 .stat + .stat {
-  border-left: 1px solid rgba(136, 149, 216, 0.18);
+  border-left: 1px solid rgba(212, 181, 96, 0.26);
 }
 
 .stat-icon {
@@ -889,8 +912,8 @@ a:focus-visible {
   color: var(--primary);
   background: linear-gradient(
     180deg,
-    rgba(122, 77, 255, 0.12),
-    rgba(122, 77, 255, 0.04)
+    rgba(244, 197, 66, 0.18),
+    rgba(244, 197, 66, 0.06)
   );
   font-size: 1.5rem;
   font-weight: 800;
@@ -931,7 +954,7 @@ a:focus-visible {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(122, 77, 255, 0.4),
+    rgba(244, 197, 66, 0.55),
     transparent
   );
 }
@@ -940,7 +963,7 @@ a:focus-visible {
   text-transform: uppercase;
   font-size: 0.88rem;
   letter-spacing: 0.1em;
-  color: #223267;
+  color: #78580b;
   font-weight: 800;
 }
 
@@ -966,10 +989,10 @@ a:focus-visible {
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.96),
-    rgba(243, 247, 255, 0.96)
+    rgba(255, 249, 228, 0.96)
   );
-  border: 1px solid rgba(136, 149, 216, 0.14);
-  box-shadow: 0 18px 40px rgba(87, 100, 172, 0.08);
+  border: 1px solid rgba(226, 198, 109, 0.18);
+  box-shadow: 0 18px 40px rgba(135, 103, 18, 0.08);
 }
 
 .service-body {
@@ -1026,7 +1049,7 @@ a:focus-visible {
   place-items: center;
   color: var(--primary);
   background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 10px 20px rgba(71, 83, 158, 0.12);
+  box-shadow: 0 10px 20px rgba(135, 103, 18, 0.12);
 }
 
 .fleet-card,
@@ -1068,23 +1091,23 @@ a:focus-visible {
   border-radius: 999px;
   font-size: 0.86rem;
   font-weight: 700;
-  color: #4b5b93;
-  background: rgba(122, 77, 255, 0.08);
+  color: #7a5a09;
+  background: rgba(244, 197, 66, 0.12);
 }
 
 .price-card {
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.96),
-    rgba(243, 247, 255, 0.92)
+    rgba(255, 249, 228, 0.92)
   );
-  border: 1px solid rgba(136, 149, 216, 0.14);
-  box-shadow: 0 18px 40px rgba(87, 100, 172, 0.08);
+  border: 1px solid rgba(226, 198, 109, 0.18);
+  box-shadow: 0 18px 40px rgba(135, 103, 18, 0.08);
 }
 
 .price-card.featured {
   transform: translateY(-8px);
-  box-shadow: 0 30px 60px rgba(114, 86, 255, 0.18);
+  box-shadow: 0 30px 60px rgba(203, 154, 23, 0.22);
 }
 
 .price {
@@ -1257,7 +1280,7 @@ footer {
   gap: 24px;
   padding: 28px;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--primary);
   border: 1px solid rgba(201, 214, 237, 0.86);
   box-shadow: 0 16px 40px rgba(34, 50, 88, 0.08);
 }
