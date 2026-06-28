@@ -207,7 +207,7 @@ select {
 
 .nav-links a.active,
 .nav-links a:hover {
-  background: rgba(244, 197, 66, 0.16);
+  background: rgba(255, 255, 255, 0.86);
   color: var(--text);
   border-radius: 12px;
 }
