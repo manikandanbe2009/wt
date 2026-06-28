@@ -114,8 +114,9 @@ select {
   background: var(--glass-gradient);
   border: 1px solid rgba(252, 251, 250, 0.933);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  
 }
 
 .topbar {
@@ -143,8 +144,8 @@ select {
   background: rgba(247, 210, 1, 0.94);
   border: 1px solid rgba(231, 203, 113, 0.7);
   box-shadow: 0 14px 34px rgba(135, 103, 18, 0.08);
-  backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);  
 }
 
 .brand {
@@ -471,6 +472,7 @@ select {
   background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(233, 208, 128, 0.85);
   box-shadow: 0 18px 42px rgba(135, 103, 18, 0.09);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
 
@@ -944,6 +946,14 @@ a:focus-visible {
   font-weight: 600;
   font-size: 0.85rem;
 }
+.section-divider{
+  height: 3px;
+  width: 100%;
+  background: var(--white);
+  border-radius: 999px;
+  box-shadow: 0 6px 12px rgba(135, 103, 18, 0.12);
+  margin: 10px 0;
+}
 
 .section {
   padding: 28px 0;
@@ -981,7 +991,7 @@ a:focus-visible {
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -1282,8 +1292,8 @@ a:focus-visible {
 }
 
 footer {
-  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-2) 100%);
-  padding: 18px 0 42px;
+  background: #272626;
+  padding: 38px 0 42px;
 }
 
 .footer-shell {
@@ -1291,18 +1301,14 @@ footer {
   grid-template-columns: 1.25fr repeat(2, 1fr) 1.1fr;
   gap: 24px;
   padding: 28px;
-  border-radius: 28px;
-  background: #fff;
-  border: 1px solid rgba(201, 214, 237, 0.86);
-  box-shadow: 0 16px 40px rgba(34, 50, 88, 0.08);
 }
 
 .footer-copy strong {
-  color: #0f0e0e;
+  color: #fff;
 }
 
 .footer-copy span {
-  color: rgba(15, 15, 15, 0.72);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .footer-brand-row {
@@ -1318,7 +1324,7 @@ footer {
 .footer-text,
 .footer-col p,
 .footer-col a {
-  color: rgba(11, 11, 11, 0.78);
+  color: rgba(255, 255, 255, 0.72);
   line-height: 1.6;
   font-size: 0.82rem;
   margin: 0;
@@ -1327,7 +1333,7 @@ footer {
 .footer-col h4 {
   margin: 0 0 16px;
   font-size: 1.1rem;
-  color: #020202;
+  color: #fff;
 }
 
 .footer-col nav {
@@ -1387,7 +1393,7 @@ footer {
   gap: 14px;
   margin-top: 18px;
   padding: 0 10px;
-  color: rgba(6, 6, 6, 0.68);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.92rem;
 }
 
@@ -1402,9 +1408,9 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .hero-left {
-    min-height: auto;
+  .hero-left {    
     padding-bottom: 24px;
+    min-height: auto;
   }
 
   .booking-card {
@@ -1846,11 +1852,12 @@ footer {
 }
 
 .fare-card {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.88);
   border: 1px solid rgba(132, 112, 255, 0.18);
   border-radius: 16px;
   padding: 22px;
   box-shadow: 0 12px 35px rgba(89, 70, 180, 0.08);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   transition: 0.3s ease;
 }
@@ -2023,6 +2030,7 @@ footer {
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(197, 212, 238, 0.9);
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
 }
 
@@ -2087,11 +2095,11 @@ footer {
 }
 
 .inner-book-btn {
-  color: var(--white);
+  color: var(--black);
   text-decoration: none;
   padding: 13px 24px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #8b5cff, #6d35ff);
+  background: var(--primary);
   font-size: 14px;
   font-weight: 800;
   box-shadow: 0 12px 25px rgba(80, 45, 200, 0.25);
@@ -2329,7 +2337,7 @@ footer {
 .inner-page .mission-card,
 .inner-page .timeline-item,
 .inner-page .cta-box {
-  background: var(--glass);
+  background: var(--white);
   border: 1px solid var(--border);
   border-radius: 26px;
   padding: 30px;
@@ -2371,6 +2379,7 @@ footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: linear-gradient(135deg, rgba(241, 239, 246, 0.874), rgba(244, 242, 248, 0.649));
 }
 
 /* Responsive */
@@ -2517,7 +2526,7 @@ footer {
 
 .hero-btn.primary {
   color: #fff;
-  background: linear-gradient(135deg, #8b5cff, #6d35ff);
+  background: var(--primary);
   box-shadow: 0 14px 28px rgba(124, 60, 255, 0.28);
 }
 
@@ -2648,7 +2657,7 @@ footer {
 }
 
 .fleet-card {
-  background: var(--secondary-2);
+  background: var(--white);
   border: 1px solid var(--border);
   border-radius: 28px;
   overflow: hidden;
@@ -2726,7 +2735,7 @@ footer {
   color: #fff;
   padding: 13px 18px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #8b5cff, #6d35ff);
+  background: var(--primary);
   font-weight: 800;
 }
 
@@ -2755,6 +2764,7 @@ footer {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.65);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   z-index: 9999;
   display: flex;

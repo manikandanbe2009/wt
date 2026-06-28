@@ -174,11 +174,11 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
 
         <nav class="nav-links" id="primary-nav" aria-label="Primary">
           <a class="active" href="index.php">Home</a>
-          <a href="#services">Services</a>
+          <a href="services.php">Services</a>
           <a href="fleet.php">Fleet</a>
           <a href="about.php">About Us</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#contact">Contact</a>
+          <a href="pricing.php">Pricing</a>
+          <a href="contact.php">Contact</a>
         </nav>
 
         <div class="nav-cta">
@@ -532,7 +532,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
             </div>
           </article>
 
-          <article class="service-card">
+          <!-- <article class="service-card">
             <div class="service-body">
               <div class="icon-badge">
                 <i class="bi bi-building-check"></i>
@@ -544,16 +544,16 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
               <img src="images/corporate-white-call-taxi.png" alt="Corporate travel service" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
-          </article>
+          </article> -->
         </div>
       </div>
     </section>
-
+    <hr class="section-divider"></hr>               
     <section class="section fleet" id="fleet">
       <div class="container">
         <div class="section-heading"><span>Our Fleet</span></div>
         <div class="fleet-grid">
-          <article class="fleet-card glass">
+          <article class="fleet-card">
             <div class="icon-badge"><i class="bi bi-car-front"></i></div>
             <h3>Executive Sedan</h3>
             <p>Ideal for premium city travel with refined interiors, quiet comfort and professional chauffeur service.</p>
@@ -562,7 +562,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
             </div>
           </article>
 
-          <article class="fleet-card glass">
+          <article class="fleet-card">
             <div class="icon-badge"><i class="bi bi-car-front"></i></div>
             <h3>Luxury SUV</h3>
             <p>Spacious and dependable for family trips, airport transfers and long-distance comfort.</p>
@@ -571,7 +571,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
             </div>
           </article>
 
-          <article class="fleet-card glass">
+          <article class="fleet-card">
             <div class="icon-badge"><i class="bi bi-car-front"></i></div>
             <h3>Business Class</h3>
             <p>Designed for corporate travel with premium finish, punctual scheduling and elevated service quality.</p>
@@ -582,7 +582,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
         </div>
       </div>
     </section>
-
+    <hr class="section-divider"></hr>                  
     <section class="fare-section">
   <div class="container">
 
@@ -676,7 +676,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
 
   </div>
 </section>
-
+<hr class="section-divider"></hr>  
 
     <section class="section" id="app">
       <div class="container">
@@ -721,7 +721,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
         </div>
       </div>
     </section>
-
+    <hr class="section-divider"></hr>                  
     <section class="section" id="about">
       <div class="container">
         <div class="section-heading"><span>What Our Customers Say</span></div>

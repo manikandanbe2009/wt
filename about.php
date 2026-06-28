@@ -43,11 +43,11 @@ require_once __DIR__ . '/seo.php';
 
         <nav class="nav-links" id="primary-nav" aria-label="Primary">
           <a href="index.php">Home</a>
-          <a href="#services">Services</a>
+          <a href="services.php">Services</a>
           <a href="fleet.php">Fleet</a>
           <a class="active"  href="about.php">About Us</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#contact">Contact</a>
+          <a href="pricing.php">Pricing</a>
+          <a href="contact.php">Contact</a>
         </nav>
 
         <div class="nav-cta">
@@ -57,7 +57,7 @@ require_once __DIR__ . '/seo.php';
               +91 12345 67890
             </span>
           </div>
-          <a class="button button-primary" href="index.php#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
+          <a class="button button-secondary" href="index.php#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
         </div>
       </div>
     </div>
