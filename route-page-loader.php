@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/route-data.php';
 
-$currentFile = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+$requestUri = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
+$currentFile = basename((string) $requestUri);
 $slug = preg_replace('/\.php$/', '', $currentFile);
 $selectedRoute = app_route_page((string) $slug);
 

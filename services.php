@@ -55,7 +55,7 @@ require_once __DIR__ . '/seo.php';
           <div class="support">
             <span>
               <small>24/7 Support</small>
-              +91 12345 67890
+              <?= env_value('BUSINESS_PHONE', '+91 70090 05354') ?>
             </span>
           </div>
           <a class="button button-secondary" href="index.php#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
@@ -170,7 +170,7 @@ require_once __DIR__ . '/seo.php';
               <div><i class="bi bi-check-circle-fill"></i> One way and round trip booking support</div>
               <div><i class="bi bi-check-circle-fill"></i> Sedan, SUV and premium cab options</div>
               <div><i class="bi bi-check-circle-fill"></i> Dummy office address: 24 GST Road, Guindy, Chennai 600032</div>
-              <div><i class="bi bi-check-circle-fill"></i> Dummy phone number: +91 12345 67890</div>
+              <div><i class="bi bi-check-circle-fill"></i> Support Phone: +91 70090 05354</div>
             </div>
           </div>
         </div>

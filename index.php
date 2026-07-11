@@ -49,9 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!preg_match('/^[6-9][0-9]{9}$/', $bookingData['mobile'])) {
         $bookingErrors['mobile'] = 'Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.';
     }
-    if ($bookingData['email'] === '') {
-        $bookingErrors['email'] = 'Enter your email address.';
-    } elseif (!filter_var($bookingData['email'], FILTER_VALIDATE_EMAIL)) {
+    if ($bookingData['email'] !== '' && !filter_var($bookingData['email'], FILTER_VALIDATE_EMAIL)) {
         $bookingErrors['email'] = 'Enter a valid email address.';
     }
     if ($bookingData['trip_type'] === 'two-way') {
@@ -96,12 +94,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         foreach ($vehiclesToEstimate as $vehicleName => $rateInfo) {
             $travelDistance  = $bookingData['trip_type'] === 'two-way' ? $distanceKm * 2 : $distanceKm;
-            $baseFareValue   = $bookingData['trip_type'] === 'two-way' ? $rateInfo['round_trip_base_fare'] : $rateInfo['one_way_base_fare'];
+            $minBaseKm       = $bookingData['trip_type'] === 'two-way' ? 250 * $tripDays : 130;
             $perKmValue      = $bookingData['trip_type'] === 'two-way' ? $rateInfo['round_trip_per_km'] : $rateInfo['one_way_per_km'];
-            $distanceFare    = $travelDistance * $perKmValue;
-            $driverAllowance = $bookingData['trip_type'] === 'two-way'
-                ? $tripDays * $rateInfo['round_trip_driver_bata']
-                : $rateInfo['one_way_driver_bata'];
+            $baseFareValue   = $minBaseKm * $perKmValue;
+            $additionalDistance = max(0.0, $travelDistance - $minBaseKm);
+            $distanceFare    = $additionalDistance * $perKmValue;
+            if ($bookingData['trip_type'] === 'two-way') {
+                $driverAllowance = $tripDays * $rateInfo['round_trip_driver_bata'];
+            } else {
+                $bataDays = max(1, (int) ceil($travelDistance / 400.0));
+                $driverAllowance = $bataDays * $rateInfo['one_way_driver_bata'];
+            }
             $estimatedFare   = $baseFareValue + $distanceFare + $driverAllowance;
 
             $estimationResults[] = [
@@ -120,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $selectedEstimation = $estimationResults[0] ?? null;
-$pageTitle = $selectedRoute['title'] ?? 'White Call Taxi | Airport, Outstation, City & Corporate Taxi Booking';
+$pageTitle = $selectedRoute['title'] ?? 'White Taxi | Book Outstation Cab in Tamil Nadu — Chennai, Bangalore, Madurai';
 $pageDescription = $selectedRoute['description'] ?? 'Book White Call Taxi for safe airport transfers, city rides, outstation trips and corporate travel with transparent pricing and 24/7 support.';
 $pagePath = '/' . (($selectedRoute['slug'] ?? 'index') . '.php');
 $pageHeadline = $selectedRoute['headline'] ?? 'Taxi booking for airport, city, outstation and corporate travel';
@@ -185,7 +188,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
           <div class="support">
             <span>
               <small>24/7 Support</small>
-              +91 12345 67890
+              <?= env_value('BUSINESS_PHONE', '+91 70090 05354') ?>
             </span>
           </div>
           <a class="button button-secondary" href="#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
@@ -255,70 +258,63 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
               <div class="booking-summary-panel is-hidden" id="booking-summary-panel">
                 <div class="booking-summary-card">
                   <div class="booking-summary-header">
-                    <h3>🚕 Your Cab Estimate</h3>
+                    <h3>Booking Summary</h3>
                   </div>
-                  <div class="booking-summary-row">
-                    <div>
-                    <span class="summary-row-label">Selected Cab : </span>
-                    <strong class="summary-row-value" id="summary-vehicle-name">-</strong>
+                  <div class="booking-summary-body">
+                    <div class="booking-summary-row-item">
+                      <span class="summary-row-label">Book Type</span>
+                      <strong class="summary-row-value" id="summary-book-type">-</strong>
                     </div>
-                    <div>
-                        <span class="summary-row-label">Date & Time :</span>
-                        <strong class="summary-row-value" id="summary-date">-</strong>
-                        and 
-                        <strong class="summary-row-value" id="summary-time">-</strong>
+                    <div class="booking-summary-row-item">
+                      <span class="summary-row-label">Car Type</span>
+                      <div class="summary-row-value-group">
+                        <strong class="summary-row-value" id="summary-vehicle-name">-</strong>
+                        <span class="summary-row-subvalue" id="summary-vehicle-desc">-</span>
+                      </div>
+                    </div>
+                    <div class="booking-summary-row-item">
+                      <span class="summary-row-label">Pickup</span>
+                      <strong class="summary-row-value" id="summary-pickup">-</strong>
+                    </div>
+                    <div class="booking-summary-row-item">
+                      <span class="summary-row-label">Drop</span>
+                      <strong class="summary-row-value" id="summary-drop">-</strong>
+                    </div>
+                    <div class="booking-summary-row-item">
+                      <span class="summary-row-label">Booked At</span>
+                      <strong class="summary-row-value" id="summary-booked-at">-</strong>
                     </div>
                   </div>
-                  <div class="booking-summary-row">
-                    <div>
-                    <span class="summary-row-label">Name :</span>
-                    <strong class="summary-row-value" id="summary-name">-</strong>
+
+                  <div class="payment-details-section">
+                    <h3>Payment Details</h3>
+                    <div class="payment-row">
+                      <span class="payment-label" id="summary-base-fare-label">Base Fare [130 Km]</span>
+                      <strong class="payment-value" id="summary-base-fare-val">-</strong>
                     </div>
-                    <div>
-                        <span class="summary-row-label">Mobile :</span>
-                        <strong class="summary-row-value" id="summary-mobile">-</strong>
+                    <div class="payment-row">
+                      <span class="payment-label" id="summary-additional-fare-label">Additional Fare [0 Km]</span>
+                      <strong class="payment-value" id="summary-additional-val">-</strong>
+                    </div>
+                    <div class="payment-row" id="payment-driver-bata-row">
+                      <span class="payment-label" id="summary-driver-bata-label">Driver Bata [upto 400 Km]</span>
+                      <strong class="payment-value" id="summary-driver-bata-val">-</strong>
+                    </div>
+                    <div class="payment-total-row">
+                      <span class="total-label">Total Amount</span>
+                      <strong class="total-value" id="summary-total-amount-val">-</strong>
                     </div>
                   </div>
-                  
-                  <div class="booking-summary-row">
-                    <span class="summary-row-label">Pickup :</span>
-                    <strong class="summary-row-value" id="summary-pickup">-</strong>
-                  </div>
-                  <div class="booking-summary-row">
-                    <span class="summary-row-label">Drop :</span>
-                    <strong class="summary-row-value" id="summary-drop">-</strong>
-                  </div>
-                  
-                  <div class="booking-summary-row">
-                    <div>
-                      <span class="summary-row-label">Distance : </span>
-                    <strong class="summary-row-value" id="summary-distance">-</strong>
-                    </div>
-                    <div>
-                      <span class="summary-row-label">Rate Per KM :</span>
-                    <strong class="summary-row-value" id="summary-rate-per-km">-</strong>
-                    </div>
-                    
-                  </div>
-                 
-                  <div class="booking-summary-row booking-summary-row-total">
-                    <span class="summary-row-label">Estimated Fare :</span>
-                    <strong class="summary-row-value" id="summary-estimated-fare">-</strong>
-                  </div>
-                  <div class="booking-summary-row booking-summary-row-total" id="summary-allowance-row">
-                    <span class="summary-row-label">Driver Bata :</span>
-                    <strong class="summary-row-value" id="summary-driver-allowance">-</strong>
-                  </div>
-                  <div class="booking-summary-row booking-summary-row-grand">
-                    <span class="summary-row-label">Total</span>
-                    <strong class="summary-row-value" id="summary-total-fare">-</strong>
-                  </div>
+
                   <div class="booking-summary-footer">
-                    <p>* Toll, Parking, Hill Station, Waiting &amp; Permit charges are extra if applicable</p>
                     <button class="button button-primary summary-confirm-btn" id="summary-confirm-btn" type="button">
                       <span id="summary-confirm-label">Book Cab Now</span>
                       <span id="summary-confirm-spinner" hidden>Saving...</span>
                     </button>
+                  </div>
+
+                  <div class="payment-note-box">
+                    <p><strong>Note:</strong> The actual bill amount might differ based on actual KMs travelled, Waiting time (for Oneway only), Hill-station charges, Inter-state Permits, Toll Charges etc.</p>
                   </div>
                 </div>
                 <p class="summary-status summary-status-success is-hidden" id="summary-success-msg"></p>
@@ -376,7 +372,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
 
                 <div class="field">
                   <label class="sr-only" for="email">Email</label>
-                  <input id="email" name="email" type="email" placeholder="Enter your email address" value="<?= booking_value($bookingData, 'email') ?>" required>
+                  <input id="email" name="email" type="email" placeholder="Enter your email address (optional)" value="<?= booking_value($bookingData, 'email') ?>">
                   <?php if (isset($bookingErrors['email'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['email'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                 </div>
 
@@ -670,7 +666,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
       <p>Need an exact fare for your trip? Share your route and we’ll send a detailed quote on WhatsApp in a few minutes.</p>
       <div class="fare-buttons">
         <a href="#" class="btn-dark">Get exact fare for my trip →</a>
-        <a href="https://wa.me/919884712339" class="btn-light">Ask on WhatsApp</a>
+        <a href="https://wa.me/<?= env_value('WHATSAPP_NUMBER', '917009005354') ?>" class="btn-light">Ask on WhatsApp</a>
       </div>
     </div>
 
@@ -761,11 +757,67 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
 
   <script>
     // ── CONFIG ─────────────────────────────────────────────────────────────
-    const WHATSAPP_NUMBER = '919876543210'; // ← replace with your number (country code + number, no +)
+    const WHATSAPP_NUMBER = '<?= env_value('WHATSAPP_NUMBER', '917009005354') ?>';
 
     // ── Helpers ────────────────────────────────────────────────────────────
-    const inr = (n) => 'Rs. ' + Math.round(Number(n)).toLocaleString('en-IN');
+    const inr = (n) => Number(n) > 0 ? '₹ ' + Math.round(Number(n)).toLocaleString('en-IN') + '.00' : 'TBC';
 
+    // Predefined coordinates for common locations to avoid blocking bookings
+    const PREDEFINED_LOCATIONS = {
+      "chennai": { lat: 13.0827, lng: 80.2707 },
+      "bangalore": { lat: 12.9716, lng: 77.5946 },
+      "coimbatore": { lat: 11.0168, lng: 76.9558 },
+      "madurai": { lat: 9.9252, lng: 78.1198 },
+      "pondicherry": { lat: 11.9416, lng: 79.8083 },
+      "salem": { lat: 11.6643, lng: 78.1460 },
+      "trichy": { lat: 10.7905, lng: 78.7047 },
+      "tirupati": { lat: 13.6288, lng: 79.4192 },
+      "kanyakumari": { lat: 8.0883, lng: 77.5385 },
+      "vellore": { lat: 12.9165, lng: 79.1325 },
+      "chennai airport": { lat: 12.9941, lng: 80.1709 },
+      "bangalore airport": { lat: 13.1986, lng: 77.7066 },
+      "tirupati airport": { lat: 13.6325, lng: 79.5433 },
+      "hyderabad airport": { lat: 17.2403, lng: 78.4294 },
+      "coimbatore airport": { lat: 11.0300, lng: 77.0434 },
+      "trichy airport": { lat: 10.7651, lng: 78.7139 },
+      "madurai airport": { lat: 9.8344, lng: 78.0934 },
+      "tuticorin airport": { lat: 8.7231, lng: 78.0267 }
+    };
+
+    // Predefined distances between popular locations for offline fallback
+    const PREDEFINED_DISTANCES = {
+      "chennai-bangalore": 346,
+      "chennai-coimbatore": 510,
+      "chennai-madurai": 460,
+      "chennai-pondicherry": 170,
+      "chennai-trichy": 330,
+      "coimbatore-chennai": 510,
+      "madurai-chennai": 460,
+      "trichy-chennai": 330,
+      "chennai-salem": 345,
+      "chennai-tirupati": 135,
+      "chennai-kanyakumari": 700,
+      "chennai-vellore": 140,
+      "bangalore-chennai": 346,
+      "salem-chennai": 345,
+      "tirupati-chennai": 135,
+      "kanyakumari-chennai": 700,
+      "vellore-chennai": 140
+    };
+
+    // Auto-populates coordinate fields if the text matches a predefined location
+    const autoFillCoordinates = (prefix) => {
+      const input = document.getElementById(prefix);
+      const latInput = document.getElementById(`${prefix}-lat`);
+      const lngInput = document.getElementById(`${prefix}-lng`);
+      if (!input || !latInput || !lngInput) return;
+
+      const val = input.value.trim().toLowerCase();
+      if (PREDEFINED_LOCATIONS[val]) {
+        latInput.value = PREDEFINED_LOCATIONS[val].lat;
+        lngInput.value = PREDEFINED_LOCATIONS[val].lng;
+      }
+    };
 
     // Shared booking payload
     let currentBookingPayload = null;
@@ -778,7 +830,13 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
         : 'One Way';
       const allowanceLine = Number(p.driver_allowance) > 0
         ? `\nDriver Bata : ${inr(p.driver_allowance)}` : '';
-      const msg = `🚖 *New Booking – White Call Taxi*\n\n*Vehicle :* ${p.vehicle_name || p.vehicle}\n*Trip    :* ${tripLabel}\n\n👤 *Passenger*\nName   : ${p.name}\nMobile : ${p.mobile}\nEmail  : ${p.email}\n\n📍 *Journey*\nPickup   : ${p.pickup}\nDrop     : ${p.drop}\nDistance : ${p.distance_km} km\nDate     : ${p.date}  |  Time : ${p.time}\n\n💰 *Fare Breakdown*\nBase Fare       : ${inr(p.base_fare)}\nDistance Charge : ${inr(p.dist_charge)}  (${p.distance_km} km × Rs.${p.per_km}/km)${allowanceLine}\n*TOTAL          : ${inr(p.total_fare)}*`;
+      const totalFareLabel = Number(p.total_fare) > 0 ? inr(p.total_fare) : 'To be confirmed on call';
+      const distanceLabel = Number(p.distance_km) > 0 ? `${p.distance_km} km` : 'TBC';
+      const fareBreakdown = Number(p.total_fare) > 0 
+        ? `Base Fare       : ${inr(p.base_fare)}\nDistance Charge : ${inr(p.dist_charge)}  (${p.distance_km} km × Rs.${p.per_km}/km)${allowanceLine}\n*TOTAL          : ${totalFareLabel}*`
+        : `*Fare will be manually quoted by support shortly.*`;
+
+      const msg = `🚖 *New Booking – White Call Taxi*\n\n*Vehicle :* ${p.vehicle_name || p.vehicle}\n*Trip    :* ${tripLabel}\n\n👤 *Passenger*\nName   : ${p.name}\nMobile : ${p.mobile}\nEmail  : ${p.email || 'N/A'}\n\n📍 *Journey*\nPickup   : ${p.pickup}\nDrop     : ${p.drop}\nDistance : ${distanceLabel}\nDate     : ${p.date}  |  Time : ${p.time}\n\n💰 *Fare Breakdown*\n${fareBreakdown}`;
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
     };
 
@@ -850,9 +908,24 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
       const summarySuccessMsg = document.getElementById('summary-success-msg');
       const summaryErrorMsg = document.getElementById('summary-error-msg');
       const confirmationBox = document.getElementById('booking-confirmation-box');
+
+      const formatTimeAMPM = (timeStr) => {
+        if (!timeStr || timeStr === '-') return '-';
+        const parts = timeStr.split(':');
+        if (parts.length < 2) return timeStr;
+        let hours = parseInt(parts[0], 10);
+        const minutes = parts[1];
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${hours}:${minutes} ${ampm}`;
+      };
+
       const populateBookingSummary = (item, details) => {
-        const distCharge = item.travelDistance * item.perKm;
-        const estimatedFare = item.estimatedFare - item.driverAllowance;
+        const minBaseKm = details.tripType === 'two-way' ? 250 * details.tripDays : 130;
+        const additionalKm = Math.max(0, item.travelDistance - minBaseKm);
+        const baseFareVal = minBaseKm * item.perKm;
+        const additionalFareVal = additionalKm * item.perKm;
 
         currentBookingPayload = {
           name: details.name,
@@ -867,26 +940,44 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
           trip_type: details.tripType,
           trip_days: String(details.tripDays),
           distance_km: item.travelDistance.toFixed(1),
-          base_fare: String(Math.round(item.baseFare)),
+          base_fare: String(Math.round(baseFareVal)),
           per_km: String(Math.round(item.perKm)),
-          dist_charge: String(Math.round(distCharge)),
+          dist_charge: String(Math.round(additionalFareVal)),
           driver_allowance: String(Math.round(item.driverAllowance)),
           total_fare: String(Math.round(item.estimatedFare)),
         };
 
+        const descriptions = {
+          'SEDAN': '2 Luggages | Etios, Dzire or Similar',
+          'ETIOS': '2 Luggages | Etios, Dzire or Similar',
+          'SUV': '3 Luggages | Ertiga or Similar',
+          'INNOVA': '4 Luggages | Innova, Crysta or Similar'
+        };
+        const vehicleDesc = descriptions[item.vehicleCode.toUpperCase()] || 'Comfortable AC Cab';
+
+        document.getElementById('summary-book-type').textContent = details.tripType === 'two-way' ? 'Round Trip' : 'One way';
         document.getElementById('summary-vehicle-name').textContent = item.vehicleName;
-        document.getElementById('summary-name').textContent = details.name;
-        document.getElementById('summary-mobile').textContent = details.mobile;
+        const descEl = document.getElementById('summary-vehicle-desc');
+        if (descEl) descEl.textContent = vehicleDesc;
         document.getElementById('summary-pickup').textContent = details.pickup;
         document.getElementById('summary-drop').textContent = details.drop;
-        document.getElementById('summary-date').textContent = details.date;
-        document.getElementById('summary-time').textContent = details.time;
-        document.getElementById('summary-distance').textContent = `${item.travelDistance.toFixed(1)} km`;
-        document.getElementById('summary-rate-per-km').textContent = `Rs.${Math.round(item.perKm).toLocaleString('en-IN')}`;
-        document.getElementById('summary-estimated-fare').textContent = inr(estimatedFare);
-        document.getElementById('summary-total-fare').textContent = inr(item.estimatedFare);
+        
+        const formattedBookedAt = `${details.date} ${formatTimeAMPM(details.time)}`;
+        document.getElementById('summary-booked-at').textContent = formattedBookedAt;
 
-        document.getElementById('summary-driver-allowance').textContent = inr(item.driverAllowance);
+        // Payment details fields
+        document.getElementById('summary-base-fare-label').textContent = `Base Fare [${minBaseKm} Km]`;
+        document.getElementById('summary-base-fare-val').textContent = inr(baseFareVal);
+        
+        document.getElementById('summary-additional-fare-label').textContent = `Additional Fare [${additionalKm.toFixed(1)} Km]`;
+        document.getElementById('summary-additional-val').textContent = inr(additionalFareVal);
+
+        const bataDays = details.tripType === 'two-way' ? details.tripDays : Math.max(1, Math.ceil(item.travelDistance / 400));
+        const bataLabel = details.tripType === 'two-way' ? `Driver Bata [${bataDays} Day${bataDays > 1 ? 's' : ''}]` : `Driver Bata [upto 400 Km]`;
+        document.getElementById('summary-driver-bata-label').textContent = bataLabel;
+        document.getElementById('summary-driver-bata-val').textContent = inr(item.driverAllowance);
+
+        document.getElementById('summary-total-amount-val').textContent = inr(item.estimatedFare);
 
         renderSummaryStatus(summarySuccessMsg, '');
         renderSummaryStatus(summaryErrorMsg, '');
@@ -957,12 +1048,17 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
         const timeVal   = document.getElementById('time')?.value  || '-';
 
         results.forEach((item) => {
+          const minBaseKm = tripType === 'two-way' ? 250 * tripDays : 130;
+          const additionalKm = Math.max(0, item.travelDistance - minBaseKm);
+          const additionalFare = additionalKm * item.perKm;
+
           const card = document.createElement('article');
           card.className = 'estimate-card';
           card.innerHTML = `
             <div class="estimate-top"><h4>${item.vehicleName}</h4></div>
             <p class="estimate-price">${inr(item.estimatedFare)}</p>
-            <p class="estimate-meta">Base ${inr(item.baseFare)} + ${item.travelDistance.toFixed(1)} km &times; Rs.${Math.round(item.perKm)}</p>
+            <p class="estimate-meta">Base Fare [${minBaseKm} Km]: ${inr(item.baseFare)}</p>
+            ${additionalKm > 0 ? `<p class="estimate-meta">Additional [${additionalKm.toFixed(1)} Km]: ${inr(additionalFare)}</p>` : ''}
             <p class="estimate-meta">Driver Bata: ${inr(item.driverAllowance)}</p>
             <button class="estimate-select-btn" type="button">Confirm Cab &rarr;</button>
           `;
@@ -1014,24 +1110,164 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
           return selectedCabType === '' || vehicle === selectedCabType;
         }).map(([vehicle, r]) => {
           const travelDistance  = tripType === 'two-way' ? distanceKm * 2 : distanceKm;
-          const driverAllowance = tripType === 'two-way'
-            ? tripDays * Number(r.round_trip_driver_bata || 0)
-            : Number(r.one_way_driver_bata || 0);
-          const baseFare = tripType === 'two-way' ? Number(r.round_trip_base_fare || 0) : Number(r.one_way_base_fare || 0);
+          const minBaseKm = tripType === 'two-way' ? 250 * tripDays : 130;
           const perKm = tripType === 'two-way' ? Number(r.round_trip_per_km || 0) : Number(r.one_way_per_km || 0);
-          const estimatedFare   = baseFare + travelDistance * perKm + driverAllowance;
+          const baseFare = minBaseKm * perKm;
+          const additionalDistance = Math.max(0, travelDistance - minBaseKm);
+          const distanceFare = additionalDistance * perKm;
+          let driverAllowance = 0;
+          if (tripType === 'two-way') {
+            driverAllowance = tripDays * Number(r.round_trip_driver_bata || 0);
+          } else {
+            const bataDays = Math.max(1, Math.ceil(travelDistance / 400));
+            driverAllowance = bataDays * Number(r.one_way_driver_bata || 0);
+          }
+          const estimatedFare   = baseFare + distanceFare + driverAllowance;
           return { vehicleCode: vehicle, vehicleName: r.vehicle_name || vehicle, baseFare, perKm, driverAllowance, travelDistance, estimatedFare };
         }).sort((a, b) => a.estimatedFare - b.estimatedFare);
         renderEstimationResults(rows, distanceKm, tripType, tripDays);
       };
 
+      const showFallbackEstimate = () => {
+        if (!resultsWrapper || !resultsGrid) return;
+        resultsGrid.innerHTML = '';
+        summaryPanel?.classList.add('is-hidden');
+        confirmationBox?.classList.add('is-hidden');
+        summaryWhatsappBtn?.classList.add('is-hidden');
+        renderSummaryStatus(summarySuccessMsg, '');
+        renderSummaryStatus(summaryErrorMsg, '');
+
+        const selectedCabType = cabTypeInput?.value || 'SEDAN';
+        const cabName = cabTypeInput?.options[cabTypeInput.selectedIndex]?.text || 'Cab';
+
+        const card = document.createElement('article');
+        card.className = 'estimate-card estimate-card-fallback';
+        card.innerHTML = `
+          <div class="estimate-top"><h4>${cabName} (Custom Route)</h4></div>
+          <p class="estimate-price">Fare: To be confirmed</p>
+          <p class="estimate-meta">Distance-based pricing applies.</p>
+          <p class="estimate-meta">We will contact you with the exact quote.</p>
+          <button class="estimate-select-btn" type="button">Confirm Booking &rarr;</button>
+        `;
+
+        card.querySelector('.estimate-select-btn').addEventListener('click', () => {
+          if (selectedEstimateCard) selectedEstimateCard.classList.remove('selected');
+          selectedEstimateCard = card;
+          selectedEstimateCard.classList.add('selected');
+
+          const details = {
+            name: document.getElementById('name')?.value || '-',
+            email: document.getElementById('email')?.value || '-',
+            mobile: mobileInput.value || '-',
+            pickup: pickupInput.value || '-',
+            drop: dropInput.value || '-',
+            date: document.getElementById('date')?.value || '-',
+            time: document.getElementById('time')?.value || '-',
+            tripType: bookingForm.querySelector('input[name="trip_type"]:checked')?.value || 'one-way',
+            tripDays: tripDaysField.hidden ? 1 : Math.max(1, Number(tripDaysInput.value || 1)),
+          };
+
+          currentBookingPayload = {
+            name: details.name,
+            email: details.email,
+            mobile: details.mobile,
+            pickup: details.pickup,
+            drop: details.drop,
+            date: details.date,
+            time: details.time,
+            vehicle: selectedCabType,
+            vehicle_name: cabName,
+            trip_type: details.tripType,
+            trip_days: String(details.tripDays),
+            distance_km: '0',
+            base_fare: '0',
+            per_km: '0',
+            dist_charge: '0',
+            driver_allowance: '0',
+            total_fare: '0',
+          };
+
+          const descriptions = {
+            'SEDAN': '2 Luggages | Etios, Dzire or Similar',
+            'ETIOS': '2 Luggages | Etios, Dzire or Similar',
+            'SUV': '3 Luggages | Ertiga or Similar',
+            'INNOVA': '4 Luggages | Innova, Crysta or Similar'
+          };
+          const vehicleDesc = descriptions[selectedCabType.toUpperCase()] || 'Comfortable AC Cab';
+
+          document.getElementById('summary-book-type').textContent = details.tripType === 'two-way' ? 'Round Trip' : 'One way';
+          document.getElementById('summary-vehicle-name').textContent = cabName;
+          const descEl = document.getElementById('summary-vehicle-desc');
+          if (descEl) descEl.textContent = vehicleDesc;
+          document.getElementById('summary-pickup').textContent = details.pickup;
+          document.getElementById('summary-drop').textContent = details.drop;
+          
+          const formattedBookedAt = `${details.date} ${formatTimeAMPM(details.time)}`;
+          document.getElementById('summary-booked-at').textContent = formattedBookedAt;
+
+          // Payment details fields
+          document.getElementById('summary-base-fare-label').textContent = `Base Fare`;
+          document.getElementById('summary-base-fare-val').textContent = `TBC`;
+          
+          document.getElementById('summary-additional-fare-label').textContent = `Additional Fare`;
+          document.getElementById('summary-additional-val').textContent = `TBC`;
+
+          document.getElementById('summary-driver-bata-label').textContent = `Driver Bata`;
+          document.getElementById('summary-driver-bata-val').textContent = `TBC`;
+
+          document.getElementById('summary-total-amount-val').textContent = `TBC`;
+
+          renderSummaryStatus(summarySuccessMsg, '');
+          renderSummaryStatus(summaryErrorMsg, '');
+          confirmationBox?.classList.add('is-hidden');
+          summaryWhatsappBtn?.classList.add('is-hidden');
+          summaryConfirmBtn.hidden = false;
+          summaryConfirmBtn.disabled = false;
+          summaryConfirmLabel.hidden = false;
+          summaryConfirmSpinner.hidden = true;
+          summaryPanel?.classList.remove('is-hidden');
+        });
+
+        resultsGrid.appendChild(card);
+        hideForm();
+        card.querySelector('.estimate-select-btn')?.click();
+      };
+
       const fetchDistanceAndEstimate = async () => {
-        const params = new URLSearchParams({ p_lat: pickupLatInput.value, p_lng: pickupLngInput.value, d_lat: dropLatInput.value, d_lng: dropLngInput.value });
-        const response = await fetch(`distance.php?${params}`, { headers: { Accept: 'application/json' } });
-        const payload  = await response.json();
-        if (!response.ok || !payload.distance_km) throw new Error(payload.error || 'Unable to calculate route distance.');
-        distanceInput.value = payload.distance_km;
-        calculateEstimates(Number(payload.distance_km));
+        const pLat = pickupLatInput.value;
+        const pLng = pickupLngInput.value;
+        const dLat = dropLatInput.value;
+        const dLng = dropLngInput.value;
+
+        // Try using Google distance matrix if we have coordinates
+        if (pLat && pLng && dLat && dLng) {
+          try {
+            const params = new URLSearchParams({ p_lat: pLat, p_lng: pLng, d_lat: dLat, d_lng: dLng });
+            const response = await fetch(`distance.php?${params}`, { headers: { Accept: 'application/json' } });
+            const payload  = await response.json();
+            if (response.ok && payload.distance_km) {
+              distanceInput.value = payload.distance_km;
+              calculateEstimates(Number(payload.distance_km));
+              return;
+            }
+          } catch (err) {
+            console.warn('Distance Matrix call failed, trying fallback...', err);
+          }
+        }
+
+        // Fallback: Check predefined distances
+        const pName = pickupInput.value.trim().toLowerCase();
+        const dName = dropInput.value.trim().toLowerCase();
+        const routeKey = `${pName}-${dName}`;
+
+        if (PREDEFINED_DISTANCES[routeKey]) {
+          const dist = PREDEFINED_DISTANCES[routeKey];
+          distanceInput.value = dist;
+          calculateEstimates(dist);
+          return;
+        }
+
+        throw new Error('Distance calculation offline.');
       };
 
       const syncTripTypeFields = () => {
@@ -1043,9 +1279,13 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
 
       syncTripTypeFields();
 
+      // Auto-fill coordinates on page load for PHP pre-filled fields
+      autoFillCoordinates('pickup');
+      autoFillCoordinates('drop');
+
       mobileInput.addEventListener('input', () => { mobileInput.value = mobileInput.value.replace(/\D/g, '').slice(0, 10); mobileInput.setCustomValidity(''); });
-      pickupInput.addEventListener('input', () => clearPlaceCoordinates('pickup'));
-      dropInput.addEventListener('input',   () => clearPlaceCoordinates('drop'));
+      pickupInput.addEventListener('input', () => { clearPlaceCoordinates('pickup'); autoFillCoordinates('pickup'); });
+      dropInput.addEventListener('input',   () => { clearPlaceCoordinates('drop'); autoFillCoordinates('drop'); });
       emailInput.addEventListener('input',  () => emailInput.setCustomValidity(''));
       tripDaysInput.addEventListener('input',() => tripDaysInput.setCustomValidity(''));
       tripTypeInputs.forEach((i) => i.addEventListener('change', syncTripTypeFields));
@@ -1155,14 +1395,24 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
         distanceInput.setCustomValidity('');
 
         if (!/^[6-9][0-9]{9}$/.test(mobileInput.value)) mobileInput.setCustomValidity('Enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.');
-        if (emailInput.validity.valueMissing) emailInput.setCustomValidity('Enter your email address.');
-        else if (emailInput.validity.typeMismatch) emailInput.setCustomValidity('Enter a valid email address.');
+        if (emailInput.value.trim() !== '') {
+          if (emailInput.validity.typeMismatch) {
+            emailInput.setCustomValidity('Enter a valid email address.');
+          } else {
+            emailInput.setCustomValidity('');
+          }
+        } else {
+          emailInput.setCustomValidity('');
+        }
         if (!tripDaysField.hidden) {
           if (tripDaysInput.validity.valueMissing) tripDaysInput.setCustomValidity('Enter the number of days for the round trip.');
           else if (Number(tripDaysInput.value) < 1) tripDaysInput.setCustomValidity('Days must be at least 1.');
         }
-        if (!pickupLatInput.value || !pickupLngInput.value) pickupInput.setCustomValidity('Please select a valid pickup location from Google suggestions.');
-        if (!dropLatInput.value   || !dropLngInput.value)   dropInput.setCustomValidity('Please select a valid drop location from Google suggestions.');
+        if (!pickupInput.value.trim()) pickupInput.setCustomValidity('Enter the pickup location.');
+        else pickupInput.setCustomValidity('');
+
+        if (!dropInput.value.trim()) dropInput.setCustomValidity('Enter the drop location.');
+        else dropInput.setCustomValidity('');
 
         if (!bookingForm.checkValidity()) { bookingForm.reportValidity(); renderMessage(errorMessage, 'Please correct the highlighted form fields.'); renderMessage(successMessage, ''); return; }
 
@@ -1171,7 +1421,8 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
           renderMessage(successMessage, '');
           await fetchDistanceAndEstimate();
         } catch (err) {
-          renderMessage(errorMessage, err.message || 'Unable to generate estimation right now.');
+          console.warn(err);
+          showFallbackEstimate();
         }
       });
     }

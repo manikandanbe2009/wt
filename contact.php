@@ -54,7 +54,7 @@ require_once __DIR__ . '/seo.php';
           <div class="support">
             <span>
               <small>24/7 Support</small>
-              +91 12345 67890
+              <?= env_value('BUSINESS_PHONE', '+91 70090 05354') ?>
             </span>
           </div>
           <a class="button button-secondary" href="index.php#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
@@ -106,8 +106,8 @@ require_once __DIR__ . '/seo.php';
           <div class="mission-card">
             <div class="icon-box"><i class="bi bi-telephone-fill"></i></div>
             <h3>Phone Number</h3>
-            <p><a href="tel:+911234567890">+91 12345 67890</a></p>
-            <p>Use this dummy number now and replace it with your business number later.</p>
+            <p><a href="tel:+917009005354">+91 70090 05354</a></p>
+            <p>Call us anytime for bookings, queries and instant support.</p>
           </div>
           <div class="mission-card">
             <div class="icon-box"><i class="bi bi-envelope-fill"></i></div>
@@ -134,7 +134,7 @@ require_once __DIR__ . '/seo.php';
             <p>This contact page is useful for people searching terms like Chennai taxi phone number, airport taxi contact, one way cab booking number and local taxi enquiry. It gives customers a quick way to connect before they complete an online booking.</p>
             <p>For faster fare estimation, customers can use the home page booking form where pickup and drop can be selected using Google location suggestions. That helps generate route-based pricing for airport rides, city travel and outstation taxi routes.</p>
             <div class="check-list">
-              <div><i class="bi bi-check-circle-fill"></i> Dummy phone: +91 12345 67890</div>
+              <div><i class="bi bi-check-circle-fill"></i> Phone: +91 70090 05354</div>
               <div><i class="bi bi-check-circle-fill"></i> Dummy email: info@whitecalltaxi.com</div>
               <div><i class="bi bi-check-circle-fill"></i> Dummy address: 24 GST Road, Guindy, Chennai 600032</div>
               <div><i class="bi bi-check-circle-fill"></i> Booking form available on the home page</div>

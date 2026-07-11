@@ -50,13 +50,13 @@ $driverAllowance = trim((string) ($data['driver_allowance'] ?? '0'));
 $totalFare       = trim((string) ($data['total_fare']       ?? ''));
 
 // ── Validate required fields ─────────────────────────────────────────────────
-if ($name === '' || $email === '' || $mobile === '' || $vehicle === '') {
+if ($name === '' || $mobile === '' || $vehicle === '') {
     http_response_code(422);
     echo json_encode(['error' => 'Required booking fields are missing.']);
     exit;
 }
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(422);
     echo json_encode(['error' => 'Invalid customer email address.']);
     exit;
@@ -129,7 +129,7 @@ function store_booking(
 // ── Business config ──────────────────────────────────────────────────────────
 $businessName  = 'White Call Taxi';
 $businessEmail = env_value('BUSINESS_EMAIL', 'info@whitecalltaxi.com');
-$businessPhone = env_value('BUSINESS_PHONE', '+91 12345 67890');
+$businessPhone = env_value('BUSINESS_PHONE', '+91 70090 05354');
 $smtpFrom      = env_value('SMTP_FROM', $businessEmail);
 
 $tripTypeLabel = $tripType === 'two-way'
@@ -144,21 +144,27 @@ try {
 
     $rateInfo = $rateTable[$vehicle];
     $vehicleLabel = (string) ($rateInfo['vehicle_name'] ?? $vehicle);
-    $tripDays = (string) max(1, (int) ($tripDays === '' ? '1' : $tripDays));
+    $tripDaysInt = max(1, (int) ($tripDays === '' ? 1 : (int) $tripDays));
     $travelDistance = $tripType === 'two-way' ? (float) $distanceKm * 2 : (float) $distanceKm;
-    $baseFareValue = $tripType === 'two-way' ? (float) $rateInfo['round_trip_base_fare'] : (float) $rateInfo['one_way_base_fare'];
+    
+    $minBaseKm = $tripType === 'two-way' ? 250 * $tripDaysInt : 130;
     $perKmValue = $tripType === 'two-way' ? (float) $rateInfo['round_trip_per_km'] : (float) $rateInfo['one_way_per_km'];
+    
+    $baseFareValue = $minBaseKm * $perKmValue;
+    $additionalDistance = max(0.0, $travelDistance - $minBaseKm);
+    $distChargeValue = $additionalDistance * $perKmValue;
+    
+    if ($tripType === 'two-way') {
+        $driverAllowanceValue = $tripDaysInt * (float) $rateInfo['round_trip_driver_bata'];
+    } else {
+        $bataDays = max(1, (int) ceil($travelDistance / 400.0));
+        $driverAllowanceValue = $bataDays * (float) $rateInfo['one_way_driver_bata'];
+    }
+    
     $baseFare = number_format($baseFareValue, 2, '.', '');
     $perKm = number_format($perKmValue, 2, '.', '');
-    $distCharge = number_format($travelDistance * $perKmValue, 2, '.', '');
-    $driverAllowance = number_format(
-        $tripType === 'two-way'
-            ? (int) $tripDays * (float) $rateInfo['round_trip_driver_bata']
-            : (float) $rateInfo['one_way_driver_bata'],
-        2,
-        '.',
-        ''
-    );
+    $distCharge = number_format($distChargeValue, 2, '.', '');
+    $driverAllowance = number_format($driverAllowanceValue, 2, '.', '');
     $totalFare = number_format((float) $baseFare + (float) $distCharge + (float) $driverAllowance, 2, '.', '');
 
     $bookingRecord = store_booking(
@@ -346,21 +352,24 @@ $htmlBody .= '
 </html>';
 
 // ── Send to customer ─────────────────────────────────────────────────────────
-$subject = "Your {$businessName} Booking - {$vehicleLabel} on {$date}";
-$headers  = "MIME-Version: 1.0\r\n";
-$headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-$headers .= "From: {$businessName} <{$smtpFrom}>\r\n";
-$headers .= "Reply-To: {$businessEmail}\r\n";
-$headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+$customerSent = false;
+if ($email !== '') {
+    $subject = "Your {$businessName} Booking - {$vehicleLabel} on {$date}";
+    $headers  = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "From: {$businessName} <{$smtpFrom}>\r\n";
+    $headers .= "Reply-To: {$businessEmail}\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
 
-$customerSent = @mail($email, $subject, $htmlBody, $headers);
+    $customerSent = @mail($email, $subject, $htmlBody, $headers);
+}
 
 // ── Send copy to business ────────────────────────────────────────────────────
 $bizSubject  = "New Booking - {$vehicleLabel} | {$name} | {$date} {$time}";
 $bizHeaders  = "MIME-Version: 1.0\r\n";
 $bizHeaders .= "Content-Type: text/html; charset=UTF-8\r\n";
 $bizHeaders .= "From: {$businessName} Bookings <{$smtpFrom}>\r\n";
-$bizHeaders .= "Reply-To: {$email}\r\n";
+$bizHeaders .= "Reply-To: " . ($email !== '' ? $email : $businessEmail) . "\r\n";
 $bizHeaders .= "X-Mailer: PHP/" . phpversion() . "\r\n";
 
 $businessSent = @mail($businessEmail, $bizSubject, $htmlBody, $bizHeaders);
@@ -380,13 +389,104 @@ try {
     // Keep the booking saved even if email-status persistence fails.
 }
 
+// ── WhatsApp Business API Cloud Integration ──────────────────────────────────
+$whatsappCustomerSent = false;
+$whatsappBusinessSent = false;
+
+function app_send_whatsapp_template(string $to, string $templateName, array $parameters): bool
+{
+    $token = env_value('WHATSAPP_API_TOKEN');
+    $phoneId = env_value('WHATSAPP_PHONE_NUMBER_ID');
+
+    if ($token === '' || $phoneId === '' || $to === '') {
+        return false;
+    }
+
+    $cleanTo = preg_replace('/[^+0-9]/', '', $to);
+    $cleanTo = ltrim($cleanTo, '+');
+
+    $bodyParams = [];
+    foreach ($parameters as $param) {
+        $bodyParams[] = [
+            'type' => 'text',
+            'text' => (string) $param,
+        ];
+    }
+
+    $payload = [
+        'messaging_product' => 'whatsapp',
+        'recipient_type' => 'individual',
+        'to' => $cleanTo,
+        'type' => 'template',
+        'template' => [
+            'name' => $templateName,
+            'language' => [
+                'code' => env_value('WHATSAPP_TEMPLATE_LANG', 'en'),
+            ],
+            'components' => [
+                [
+                    'type' => 'body',
+                    'parameters' => $bodyParams,
+                ],
+            ],
+        ],
+    ];
+
+    $url = 'https://graph.facebook.com/v19.0/' . $phoneId . '/messages';
+
+    $ch = curl_init($url);
+    if ($ch === false) {
+        return false;
+    }
+
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Authorization: Bearer ' . $token,
+        'Content-Type: application/json',
+    ]);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    return $httpCode >= 200 && $httpCode < 300;
+}
+
+$whatsappTemplate = env_value('WHATSAPP_TEMPLATE_NAME');
+if ($whatsappTemplate !== '') {
+    $whatsappParams = [
+        $name,
+        $bookingCode,
+        $vehicleLabel,
+        $pickup,
+        $drop === '' ? 'N/A' : $drop,
+        $date . ' ' . $time,
+        (float) $totalFare > 0 ? 'Rs. ' . number_format((float) $totalFare, 0) : 'To be confirmed',
+    ];
+
+    if ($mobile !== '') {
+        $whatsappCustomerSent = app_send_whatsapp_template($mobile, $whatsappTemplate, $whatsappParams);
+    }
+
+    $adminTo = env_value('WHATSAPP_NOTIFICATION_RECIPIENT');
+    if ($adminTo !== '') {
+        $whatsappBusinessSent = app_send_whatsapp_template($adminTo, $whatsappTemplate, $whatsappParams);
+    }
+}
+
 // ── Always return clean JSON ─────────────────────────────────────────────────
 ob_clean(); // discard any stray output before final response
 echo json_encode([
-    'success'       => true,
-    'booking_id'    => $bookingCode,
-    'success_url'   => $successUrl,
-    'customer_sent' => (bool) $customerSent,
-    'business_sent' => (bool) $businessSent,
-    'message'       => 'Booking saved successfully.',
+    'success'                => true,
+    'booking_id'             => $bookingCode,
+    'success_url'            => $successUrl,
+    'customer_sent'          => (bool) $customerSent,
+    'business_sent'          => (bool) $businessSent,
+    'whatsapp_customer_sent' => (bool) $whatsappCustomerSent,
+    'whatsapp_business_sent' => (bool) $whatsappBusinessSent,
+    'message'                => 'Booking saved successfully.',
 ]);

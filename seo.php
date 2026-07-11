@@ -18,7 +18,8 @@ function app_canonical_url(string $path = ''): string
 }
 
 function app_seo_render(array $page): void
-{
+{   
+    
     $title = (string) ($page['title'] ?? 'White Call Taxi');
     $description = (string) ($page['description'] ?? 'White Call Taxi offers safe, reliable taxi service for airport, city, outstation and corporate rides.');
     $path = (string) ($page['path'] ?? '/');
@@ -30,7 +31,7 @@ function app_seo_render(array $page): void
     $serviceName = (string) ($page['service_name'] ?? 'Taxi Service');
     $canonical = app_canonical_url($path);
     $imageUrl = str_starts_with($image, 'http') ? $image : app_canonical_url($image);
-    $phone = env_value('BUSINESS_PHONE', '+91 12345 67890');
+    $phone = env_value('BUSINESS_PHONE', '+91 70090 05354');
     $email = env_value('BUSINESS_EMAIL', 'info@whitecalltaxi.com');
 
     $schema = [
@@ -41,10 +42,32 @@ function app_seo_render(array $page): void
                 '@id' => app_canonical_url('/#organization'),
                 'name' => 'White Call Taxi',
                 'url' => app_base_url() . '/',
+                'logo' => app_canonical_url('images/logo.png'),
                 'image' => $imageUrl,
                 'telephone' => $phone,
                 'email' => $email,
                 'priceRange' => '$$',
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'streetAddress' => '24 GST Road, Guindy',
+                    'addressLocality' => 'Chennai',
+                    'addressRegion' => 'Tamil Nadu',
+                    'postalCode' => '600032',
+                    'addressCountry' => 'IN',
+                ],
+                'geo' => [
+                    '@type' => 'GeoCoordinates',
+                    'latitude' => 12.9972,
+                    'longitude' => 80.2110,
+                ],
+                'openingHoursSpecification' => [
+                    '@type' => 'OpeningHoursSpecification',
+                    'dayOfWeek' => [
+                        'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+                    ],
+                    'opens' => '00:00',
+                    'closes' => '23:59',
+                ],
                 'areaServed' => [
                     '@type' => 'Place',
                     'name' => 'India',

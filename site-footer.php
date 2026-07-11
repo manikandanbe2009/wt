@@ -4,6 +4,11 @@ require_once __DIR__ . '/route-data.php';
 $routeLinks = array_values(app_route_pages());
 $chennaiLinks = array_values(app_route_chennai_pages());
 $airportLinks = array_values(app_route_airport_pages());
+
+$phone = env_value('BUSINESS_PHONE', '+91 70090 05354');
+$cleanPhone = preg_replace('/[^+0-9]/', '', $phone);
+$email = env_value('BUSINESS_EMAIL', 'info@whitecalltaxi.com');
+$whatsapp = env_value('WHATSAPP_NUMBER', '917009005354');
 ?>
 <footer id="contact">
   <div class="container">
@@ -13,13 +18,13 @@ $airportLinks = array_values(app_route_airport_pages());
         <h4>Contact Us</h4>
         <nav>
           <p>White Call Taxi, 24 GST Road, Guindy, Chennai, Tamil Nadu 600032</p>
-          <a href="tel:+911234567890">+91 12345 67890</a>
-          <a href="mailto:info@whitecalltaxi.com">info@whitecalltaxi.com</a>
+          <a href="tel:<?= htmlspecialchars($cleanPhone, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($phone, ENT_QUOTES, 'UTF-8') ?></a>
+          <a href="mailto:<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?></a>
           <a href="contact.php">24/7 Booking Support</a>
           <div class="socials">
-          <a href="tel:+911234567890" aria-label="Call White Call Taxi">Call</a>
-          <a href="https://wa.me/911234567890" aria-label="WhatsApp White Call Taxi">WA</a>
-          <a href="mailto:info@whitecalltaxi.com" aria-label="Email White Call Taxi">Mail</a>
+          <a href="tel:<?= htmlspecialchars($cleanPhone, ENT_QUOTES, 'UTF-8') ?>" aria-label="Call White Call Taxi">Call</a>
+          <a href="https://wa.me/<?= htmlspecialchars($whatsapp, ENT_QUOTES, 'UTF-8') ?>" aria-label="WhatsApp White Call Taxi">WA</a>
+          <a href="mailto:<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>" aria-label="Email White Call Taxi">Mail</a>
         </div>
         </nav>
       </div>
@@ -74,3 +79,9 @@ $airportLinks = array_values(app_route_airport_pages());
     </div>
   </div>
 </footer>
+
+<!-- Floating WhatsApp Chat Badge -->
+<a href="https://wa.me/<?= htmlspecialchars($whatsapp, ENT_QUOTES, 'UTF-8') ?>?text=<?= urlencode('Hello White Call Taxi, I want to book a ride.') ?>" class="whatsapp-float-badge" target="_blank" rel="noopener noreferrer" aria-label="Book Taxi via WhatsApp">
+  <i class="bi bi-whatsapp"></i>
+  <span>Book via WhatsApp</span>
+</a>

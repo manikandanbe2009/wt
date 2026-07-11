@@ -7,8 +7,8 @@ function app_route_pages(): array
             'slug' => 'chennai-to-bangalore-taxi',
             'pickup' => 'Chennai',
             'drop' => 'Bangalore',
-            'title' => 'Chennai to Bangalore Taxi | One Way Cab Booking | White Call Taxi',
-            'description' => 'Book Chennai to Bangalore taxi with White Call Taxi for one way, round trip, airport transfer and outstation travel with transparent fare and 24/7 support.',
+            'title' => 'Chennai to Bangalore Taxi | Book Cab ₹3,200 — White Call Taxi',
+            'description' => 'Book Chennai to Bangalore taxi from ₹3,200. One-way & round trip. 346 km | 6 hrs. Verified drivers. No hidden charges',
             'headline' => 'Chennai to Bangalore taxi booking',
             'hero_eyebrow' => 'Popular Outstation Route',
             'hero_title' => 'Chennai to <span class="accent">Bangalore</span><br>Taxi Booking.',
@@ -96,7 +96,11 @@ function app_route_pages(): array
 
 function app_route_page(string $slug): ?array
 {
-    $routes = app_route_pages();
+    $routes = array_merge(
+        app_route_pages(),
+        app_route_chennai_pages(),
+        app_route_airport_pages()
+    );
 
     return $routes[$slug] ?? null;
 }

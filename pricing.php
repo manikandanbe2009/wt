@@ -1,5 +1,8 @@
 <?php
+require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/seo.php';
+
+$rates = app_rate_table();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,7 +58,7 @@ require_once __DIR__ . '/seo.php';
           <div class="support">
             <span>
               <small>24/7 Support</small>
-              +91 12345 67890
+              <?= env_value('BUSINESS_PHONE', '+91 70090 05354') ?>
             </span>
           </div>
           <a class="button button-secondary" href="index.php#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
@@ -114,9 +117,12 @@ require_once __DIR__ . '/seo.php';
             <h5>ONE WAY DROP</h5>
             <h3>Outstation one way taxi</h3>
             <p>Best for single-side intercity travel.</p>
-            <div class="fare-row"><span>Sedan</span><strong>from Rs.14/km</strong></div>
-            <div class="fare-row"><span>SUV</span><strong>from Rs.19/km</strong></div>
-            <div class="fare-row"><span>Premium</span><strong>from Rs.24/km</strong></div>
+            <?php foreach ($rates as $vehicleCode => $rateInfo): ?>
+              <div class="fare-row">
+                <span><?= htmlspecialchars($rateInfo['vehicle_name'], ENT_QUOTES, 'UTF-8') ?></span>
+                <strong>from Rs. <?= number_format($rateInfo['one_way_per_km'], 0) ?>/km</strong>
+              </div>
+            <?php endforeach; ?>
             <div class="fare-line"></div>
             <small>Minimum billing may apply based on route and city pair.</small>
             <small>Driver bata extra as applicable for selected route.</small>
@@ -126,9 +132,12 @@ require_once __DIR__ . '/seo.php';
             <h5>ROUND TRIP</h5>
             <h3>Outstation round trip taxi</h3>
             <p>Useful for return travel and multi-stop journeys.</p>
-            <div class="fare-row"><span>Sedan</span><strong>from Rs.13/km</strong></div>
-            <div class="fare-row"><span>SUV</span><strong>from Rs.18/km</strong></div>
-            <div class="fare-row"><span>Premium</span><strong>from Rs.21/km</strong></div>
+            <?php foreach ($rates as $vehicleCode => $rateInfo): ?>
+              <div class="fare-row">
+                <span><?= htmlspecialchars($rateInfo['vehicle_name'], ENT_QUOTES, 'UTF-8') ?></span>
+                <strong>from Rs. <?= number_format($rateInfo['round_trip_per_km'], 0) ?>/km</strong>
+              </div>
+            <?php endforeach; ?>
             <div class="fare-line"></div>
             <small>Daily minimum kilometers may apply for round trips.</small>
             <small>Night halt, permit and toll charges may be extra.</small>
@@ -165,8 +174,8 @@ require_once __DIR__ . '/seo.php';
           </div>
           <div class="mission-card">
             <div class="icon-box"><i class="bi bi-telephone-outbound-fill"></i></div>
-            <h3>Dummy Contact Details</h3>
-            <p>Call +91 12345 67890 or visit 24 GST Road, Guindy, Chennai 600032 to replace with your real details later.</p>
+            <h3>Contact Details</h3>
+            <p>Call +91 70090 05354 or visit 24 GST Road, Guindy, Chennai 600032 for bookings, queries and instant support.</p>
           </div>
         </div>
       </div>

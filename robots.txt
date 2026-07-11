@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Disallow: /admin_booking_edit.php
+Disallow: /admin_bookings.php
+Disallow: /admin_dashboard.php
+Disallow: /admin_login.php
+Disallow: /admin_logout.php
+Disallow: /config.php
+Disallow: /db.php
+Disallow: /distance.php
+Disallow: /route-data.php
+Disallow: /route-landing.php
+Disallow: /route-page-loader.php
+Disallow: /send_booking.php
+
+Sitemap: https://whitecalltaxi.com/sitemap.xml

@@ -54,7 +54,7 @@ require_once __DIR__ . '/seo.php';
           <div class="support">
             <span>
               <small>24/7 Support</small>
-              +91 12345 67890
+              <?= env_value('BUSINESS_PHONE', '+91 70090 05354') ?>
             </span>
           </div>
           <a class="button button-secondary" href="index.php#booking">Book Now <span aria-hidden="true">&rarr;</span></a>
