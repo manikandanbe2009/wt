@@ -13,4 +13,4 @@ Disallow: /route-landing.php
 Disallow: /route-page-loader.php
 Disallow: /send_booking.php
 
-Sitemap: https://whitecalltaxi.com/sitemap.xml
+Sitemap: http://whiteonewaydroptaxi.com/sitemap.xml

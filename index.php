@@ -127,13 +127,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $selectedEstimation = $estimationResults[0] ?? null;
-$pageTitle = $selectedRoute['title'] ?? 'White Taxi | Book Outstation Cab in Tamil Nadu — Chennai, Bangalore, Madurai';
-$pageDescription = $selectedRoute['description'] ?? 'Book White Call Taxi for safe airport transfers, city rides, outstation trips and corporate travel with transparent pricing and 24/7 support.';
+$pageTitle = $selectedRoute['title'] ?? 'White One Way Drop Taxi | Outstation Cab Booking in Tamil Nadu';
+$pageDescription = $selectedRoute['description'] ?? 'Book White One Way Drop Taxi for safe outstation cab booking, airport transfers, and local rides in Tamil Nadu. Transparent pricing, verified drivers, 24/7 support.';
 $pagePath = '/' . (($selectedRoute['slug'] ?? 'index') . '.php');
-$pageHeadline = $selectedRoute['headline'] ?? 'Taxi booking for airport, city, outstation and corporate travel';
-$heroEyebrow = $selectedRoute['hero_eyebrow'] ?? 'Travel In Style, Arrive In Comfort';
-$heroTitle = $selectedRoute['hero_title'] ?? 'Premium <span class="accent">Rides.</span><br>Every <span class="accent">Time.</span>';
-$heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provides safe, reliable and luxurious rides anytime, anywhere with airport-ready pickups, city travel and corporate booking support.';
+$pageHeadline = $selectedRoute['headline'] ?? 'One Way Drop Taxi & Outstation Cab Booking in Tamil Nadu';
+$heroEyebrow = $selectedRoute['hero_eyebrow'] ?? 'Safe, Reliable & Affordable Rides';
+$heroTitle = $selectedRoute['hero_title'] ?? 'One Way <span class="accent">Drop Taxi</span><br>& Outstation Cabs';
+$heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Taxi provides safe, reliable, and premium outstation cab services across Tamil Nadu with 24/7 booking support and transparent rates.';
 ?>
 <!DOCTYPE html>
 <html lang="en">
