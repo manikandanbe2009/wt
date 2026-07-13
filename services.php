@@ -100,7 +100,7 @@ require_once __DIR__ . '/seo.php';
       </div>
     </section>
 
-    <section class="section services">
+    <section class="section services" id="services">
       <div class="container">
         <div class="section-heading"><span>Our Premium Services</span></div>
         <div class="services-grid">
@@ -155,14 +155,14 @@ require_once __DIR__ . '/seo.php';
       </div>
     </section>
 
-    <section class="about-intro">
+    <section class="about-intro" id="about">
       <div class="container">
         <div class="intro-grid">
           <div class="intro-image">
             <img src="images/about-us-image.webp" alt="Taxi service in Chennai" loading="lazy" decoding="async">
           </div>
           <div class="intro-content">
-            <p class="section-label">SEO Content</p>
+           
             <h2><span>Best taxi services in Chennai</span> for airport, local and outstation travel.</h2>
             <p>White Call Taxi helps customers book dependable taxi services in Chennai with easy route planning and clear fare details. If you need a Chennai airport taxi, a local cab for a few hours, or a one way outstation taxi to major Tamil Nadu and Karnataka cities, our team can support your trip with quick response and clean vehicles.</p>
             <p>Our booking support is useful for family travel, business travel, one way drop taxi booking, railway station transfers and day-return plans. Customers looking for Chennai cab services often prefer quick fare confirmation, verified drivers and flexible travel options, and that is the focus of our service page.</p>

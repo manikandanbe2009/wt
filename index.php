@@ -599,8 +599,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
           </article> -->
         </div>
       </div>
-    </section>
-    <hr class="section-divider"></hr>               
+    </section>             
     <section class="section fleet" id="fleet">
       <div class="container">
         <div class="section-heading"><span>Our Fleet</span></div>
@@ -634,7 +633,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
         </div>
       </div>
     </section>
-    <hr class="section-divider"></hr>                  
+                     
     <section class="fare-section">
   <div class="container">
 
@@ -728,11 +727,10 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
 
   </div>
 </section>
-<hr class="section-divider"></hr>  
 
     <section class="section" id="app">
       <div class="container">
-        <div class="app-card glass">
+        <div class="app-card">
           <div class="phones">
             <img src="images/booking-taxi.webp" class="img-fluid" alt="Online taxi booking illustration" loading="lazy" decoding="async" >
           </div>
@@ -772,8 +770,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
           </div>
         </div>
       </div>
-    </section>
-    <hr class="section-divider"></hr>                  
+    </section>                
     <section class="section" id="about">
       <div class="container">
         <div class="section-heading"><span>What Our Customers Say</span></div>
