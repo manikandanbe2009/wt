@@ -17,15 +17,15 @@ $whatsapp = env_value('WHATSAPP_NUMBER', '917009005354');
       <div class="footer-col">
         <h4>Contact Us</h4>
         <nav>
-          <p>White Call Taxi, 24 GST Road, Guindy, Chennai, Tamil Nadu 600032</p>
-          <a href="tel:<?= htmlspecialchars($cleanPhone, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($phone, ENT_QUOTES, 'UTF-8') ?></a>
-          <a href="mailto:<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?></a>
-          <a href="contact.php">24/7 Booking Support</a>
+          <p><i class="bi bi-geo-alt-fill" style="color: var(--primary); margin-right: 8px;"></i>White Call Taxi, 24 GST Road, Guindy, Chennai, Tamil Nadu 600032</p>
+          <a href="tel:<?= htmlspecialchars($cleanPhone, ENT_QUOTES, 'UTF-8') ?>"><i class="bi bi-telephone-fill" style="color: var(--primary); margin-right: 8px;"></i><?= htmlspecialchars($phone, ENT_QUOTES, 'UTF-8') ?></a>
+          <a href="mailto:<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>"><i class="bi bi-envelope-fill" style="color: var(--primary); margin-right: 8px;"></i><?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?></a>
+          <a href="contact.php"><i class="bi bi-chat-dots-fill" style="color: var(--primary); margin-right: 8px;"></i>24/7 Booking Support</a>
           <div class="socials">
-          <a href="tel:<?= htmlspecialchars($cleanPhone, ENT_QUOTES, 'UTF-8') ?>" aria-label="Call White Call Taxi">Call</a>
-          <a href="https://wa.me/<?= htmlspecialchars($whatsapp, ENT_QUOTES, 'UTF-8') ?>" aria-label="WhatsApp White Call Taxi">WA</a>
-          <a href="mailto:<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>" aria-label="Email White Call Taxi">Mail</a>
-        </div>
+            <a href="tel:<?= htmlspecialchars($cleanPhone, ENT_QUOTES, 'UTF-8') ?>" aria-label="Call White Call Taxi"><i class="bi bi-telephone-fill"></i></a>
+            <a href="https://wa.me/<?= htmlspecialchars($whatsapp, ENT_QUOTES, 'UTF-8') ?>" aria-label="WhatsApp White Call Taxi"><i class="bi bi-whatsapp"></i></a>
+            <a href="mailto:<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>" aria-label="Email White Call Taxi"><i class="bi bi-envelope-fill"></i></a>
+          </div>
         </nav>
       </div>
      
