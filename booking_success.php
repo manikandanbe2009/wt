@@ -149,16 +149,21 @@ if ($bookingId === '') {
                       <strong class="summary-row-value">Rs. <?= htmlspecialchars(number_format((float) $booking['per_km'], 2), ENT_QUOTES, 'UTF-8') ?></strong>
                     </div>
                   </div>
+                  <?php 
+                    $isRoundTrip = ($booking['trip_type'] === 'two-way');
+                    $minBaseKm = $isRoundTrip ? 250 * (int)$booking['trip_days'] : 130;
+                    $additionalKm = max(0.0, (float)$booking['distance_km'] - $minBaseKm);
+                  ?>
                   <div class="booking-summary-row booking-summary-row-total">
-                    <span class="summary-row-label">Base Fare :</span>
+                    <span class="summary-row-label">Base Fare [<?= $minBaseKm ?> Km] :</span>
                     <strong class="summary-row-value">Rs. <?= htmlspecialchars(number_format((float) $booking['base_fare'], 2), ENT_QUOTES, 'UTF-8') ?></strong>
                   </div>
                   <div class="booking-summary-row booking-summary-row-total">
-                    <span class="summary-row-label">Distance Charge :</span>
+                    <span class="summary-row-label">Additional Fare [<?= number_format($additionalKm, 1) ?> Km] :</span>
                     <strong class="summary-row-value">Rs. <?= htmlspecialchars(number_format((float) $booking['dist_charge'], 2), ENT_QUOTES, 'UTF-8') ?></strong>
                   </div>
                   <div class="booking-summary-row booking-summary-row-total">
-                    <span class="summary-row-label">Driver Bata :</span>
+                    <span class="summary-row-label"><?= $isRoundTrip ? 'Driver Bata [' . $booking['trip_days'] . ' Day' . ((int)$booking['trip_days'] > 1 ? 's' : '') . '] :' : 'Driver Bata :' ?></span>
                     <strong class="summary-row-value">Rs. <?= htmlspecialchars(number_format((float) $booking['driver_allowance'], 2), ENT_QUOTES, 'UTF-8') ?></strong>
                   </div>
                   <div class="booking-summary-row booking-summary-row-grand">

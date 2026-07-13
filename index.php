@@ -94,16 +94,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         foreach ($vehiclesToEstimate as $vehicleName => $rateInfo) {
             $travelDistance  = $bookingData['trip_type'] === 'two-way' ? $distanceKm * 2 : $distanceKm;
-            $minBaseKm       = $bookingData['trip_type'] === 'two-way' ? 250 * $tripDays : 130;
-            $perKmValue      = $bookingData['trip_type'] === 'two-way' ? $rateInfo['round_trip_per_km'] : $rateInfo['one_way_per_km'];
-            $baseFareValue   = $minBaseKm * $perKmValue;
-            $additionalDistance = max(0.0, $travelDistance - $minBaseKm);
-            $distanceFare    = $additionalDistance * $perKmValue;
             if ($bookingData['trip_type'] === 'two-way') {
-                $driverAllowance = $tripDays * $rateInfo['round_trip_driver_bata'];
+                $minBaseKm       = 250 * $tripDays;
+                $perKmValue      = (float) $rateInfo['round_trip_per_km'];
+                $baseFareValue   = $minBaseKm * $perKmValue;
+                $additionalDistance = max(0.0, $travelDistance - $minBaseKm);
+                $distanceFare    = $additionalDistance * $perKmValue;
+                $driverAllowance = $tripDays * (float) $rateInfo['round_trip_driver_bata'];
             } else {
-                $bataDays = max(1, (int) ceil($travelDistance / 400.0));
-                $driverAllowance = $bataDays * $rateInfo['one_way_driver_bata'];
+                $minBaseKm       = 130;
+                $perKmValue      = (float) $rateInfo['one_way_per_km'];
+                $baseFareValue   = $minBaseKm * $perKmValue;
+                $additionalDistance = max(0.0, $travelDistance - $minBaseKm);
+                $distanceFare    = $additionalDistance * $perKmValue;
+                $driverAllowance = (float) $rateInfo['one_way_driver_bata'];
             }
             $estimatedFare   = $baseFareValue + $distanceFare + $driverAllowance;
 
@@ -249,7 +253,15 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
                   >
                     <div class="estimate-top"><h4><?= htmlspecialchars($estimation['vehicle_name'], ENT_QUOTES, 'UTF-8') ?></h4></div>
                     <p class="estimate-price">Rs. <?= number_format($estimation['estimated_fare'], 0) ?></p>
-                    <p class="estimate-meta">Base Rs. <?= number_format($estimation['base_fare'], 0) ?> + <?= number_format($estimation['travel_distance'], 1) ?> km x Rs. <?= number_format($estimation['per_km'], 0) ?></p>
+                    <?php 
+                      $minBaseKm = $bookingData['trip_type'] === 'two-way' ? 250 * $tripDays : 130;
+                      $additionalKm = max(0.0, $estimation['travel_distance'] - $minBaseKm);
+                      $additionalFare = $additionalKm * $estimation['per_km'];
+                    ?>
+                    <p class="estimate-meta">Base Fare [<?= $minBaseKm ?> Km]: Rs. <?= number_format($estimation['base_fare'], 0) ?></p>
+                    <?php if ($additionalKm > 0): ?>
+                      <p class="estimate-meta">Additional [<?= number_format($additionalKm, 1) ?> Km]: Rs. <?= number_format($additionalFare, 0) ?></p>
+                    <?php endif; ?>
                     <p class="estimate-meta">Driver Bata: Rs. <?= number_format($estimation['driver_allowance'], 0) ?></p>
                     <button class="estimate-select-btn" type="button">Confirm Cab &rarr;</button>
                   </article>
@@ -922,10 +934,18 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
       };
 
       const populateBookingSummary = (item, details) => {
-        const minBaseKm = details.tripType === 'two-way' ? 250 * details.tripDays : 130;
-        const additionalKm = Math.max(0, item.travelDistance - minBaseKm);
-        const baseFareVal = minBaseKm * item.perKm;
-        const additionalFareVal = additionalKm * item.perKm;
+        let baseFareVal, additionalKm, additionalFareVal;
+        if (details.tripType === 'two-way') {
+          const minBaseKm = 250 * details.tripDays;
+          additionalKm = Math.max(0, item.travelDistance - minBaseKm);
+          baseFareVal = minBaseKm * item.perKm;
+          additionalFareVal = additionalKm * item.perKm;
+        } else {
+          const minBaseKm = 130;
+          additionalKm = Math.max(0, item.travelDistance - minBaseKm);
+          baseFareVal = minBaseKm * item.perKm;
+          additionalFareVal = additionalKm * item.perKm;
+        }
 
         currentBookingPayload = {
           name: details.name,
@@ -966,16 +986,29 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
         document.getElementById('summary-booked-at').textContent = formattedBookedAt;
 
         // Payment details fields
-        document.getElementById('summary-base-fare-label').textContent = `Base Fare [${minBaseKm} Km]`;
-        document.getElementById('summary-base-fare-val').textContent = inr(baseFareVal);
-        
-        document.getElementById('summary-additional-fare-label').textContent = `Additional Fare [${additionalKm.toFixed(1)} Km]`;
-        document.getElementById('summary-additional-val').textContent = inr(additionalFareVal);
+        if (details.tripType === 'two-way') {
+          const minBaseKm = 250 * details.tripDays;
+          document.getElementById('summary-base-fare-label').textContent = `Base Fare [${minBaseKm} Km]`;
+          document.getElementById('summary-base-fare-val').textContent = inr(baseFareVal);
+          
+          document.getElementById('summary-additional-fare-label').textContent = `Additional Fare [${additionalKm.toFixed(1)} Km]`;
+          document.getElementById('summary-additional-val').textContent = inr(additionalFareVal);
 
-        const bataDays = details.tripType === 'two-way' ? details.tripDays : Math.max(1, Math.ceil(item.travelDistance / 400));
-        const bataLabel = details.tripType === 'two-way' ? `Driver Bata [${bataDays} Day${bataDays > 1 ? 's' : ''}]` : `Driver Bata [upto 400 Km]`;
-        document.getElementById('summary-driver-bata-label').textContent = bataLabel;
-        document.getElementById('summary-driver-bata-val').textContent = inr(item.driverAllowance);
+          const bataDays = details.tripDays;
+          const bataLabel = `Driver Bata [${bataDays} Day${bataDays > 1 ? 's' : ''}]`;
+          document.getElementById('summary-driver-bata-label').textContent = bataLabel;
+          document.getElementById('summary-driver-bata-val').textContent = inr(item.driverAllowance);
+        } else {
+          const minBaseKm = 130;
+          document.getElementById('summary-base-fare-label').textContent = `Base Fare [${minBaseKm} Km]`;
+          document.getElementById('summary-base-fare-val').textContent = inr(baseFareVal);
+          
+          document.getElementById('summary-additional-fare-label').textContent = `Additional Fare [${additionalKm.toFixed(1)} Km]`;
+          document.getElementById('summary-additional-val').textContent = inr(additionalFareVal);
+
+          document.getElementById('summary-driver-bata-label').textContent = `Driver Bata`;
+          document.getElementById('summary-driver-bata-val').textContent = inr(item.driverAllowance);
+        }
 
         document.getElementById('summary-total-amount-val').textContent = inr(item.estimatedFare);
 
@@ -1052,13 +1085,19 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
           const additionalKm = Math.max(0, item.travelDistance - minBaseKm);
           const additionalFare = additionalKm * item.perKm;
 
+          const baseFareMeta = `<p class="estimate-meta">Base Fare [${minBaseKm} Km]: ${inr(item.baseFare)}</p>`;
+          let additionalMeta = '';
+          if (additionalKm > 0) {
+            additionalMeta = `<p class="estimate-meta">Additional [${additionalKm.toFixed(1)} Km]: ${inr(additionalFare)}</p>`;
+          }
+
           const card = document.createElement('article');
           card.className = 'estimate-card';
           card.innerHTML = `
             <div class="estimate-top"><h4>${item.vehicleName}</h4></div>
             <p class="estimate-price">${inr(item.estimatedFare)}</p>
-            <p class="estimate-meta">Base Fare [${minBaseKm} Km]: ${inr(item.baseFare)}</p>
-            ${additionalKm > 0 ? `<p class="estimate-meta">Additional [${additionalKm.toFixed(1)} Km]: ${inr(additionalFare)}</p>` : ''}
+            ${baseFareMeta}
+            ${additionalMeta}
             <p class="estimate-meta">Driver Bata: ${inr(item.driverAllowance)}</p>
             <button class="estimate-select-btn" type="button">Confirm Cab &rarr;</button>
           `;
@@ -1110,17 +1149,21 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
           return selectedCabType === '' || vehicle === selectedCabType;
         }).map(([vehicle, r]) => {
           const travelDistance  = tripType === 'two-way' ? distanceKm * 2 : distanceKm;
-          const minBaseKm = tripType === 'two-way' ? 250 * tripDays : 130;
-          const perKm = tripType === 'two-way' ? Number(r.round_trip_per_km || 0) : Number(r.one_way_per_km || 0);
-          const baseFare = minBaseKm * perKm;
-          const additionalDistance = Math.max(0, travelDistance - minBaseKm);
-          const distanceFare = additionalDistance * perKm;
-          let driverAllowance = 0;
+          let minBaseKm, perKm, baseFare, additionalDistance, distanceFare, driverAllowance;
           if (tripType === 'two-way') {
+            minBaseKm = 250 * tripDays;
+            perKm = Number(r.round_trip_per_km || 0);
+            baseFare = minBaseKm * perKm;
+            additionalDistance = Math.max(0, travelDistance - minBaseKm);
+            distanceFare = additionalDistance * perKm;
             driverAllowance = tripDays * Number(r.round_trip_driver_bata || 0);
           } else {
-            const bataDays = Math.max(1, Math.ceil(travelDistance / 400));
-            driverAllowance = bataDays * Number(r.one_way_driver_bata || 0);
+            minBaseKm = 130;
+            perKm = Number(r.one_way_per_km || 0);
+            baseFare = minBaseKm * perKm;
+            additionalDistance = Math.max(0, travelDistance - minBaseKm);
+            distanceFare = additionalDistance * perKm;
+            driverAllowance = Number(r.one_way_driver_bata || 0);
           }
           const estimatedFare   = baseFare + distanceFare + driverAllowance;
           return { vehicleCode: vehicle, vehicleName: r.vehicle_name || vehicle, baseFare, perKm, driverAllowance, travelDistance, estimatedFare };

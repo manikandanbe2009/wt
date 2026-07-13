@@ -145,7 +145,7 @@ try {
     $rateInfo = $rateTable[$vehicle];
     $vehicleLabel = (string) ($rateInfo['vehicle_name'] ?? $vehicle);
     $tripDaysInt = max(1, (int) ($tripDays === '' ? 1 : (int) $tripDays));
-    $travelDistance = $tripType === 'two-way' ? (float) $distanceKm * 2 : (float) $distanceKm;
+    $travelDistance = (float) $distanceKm;
     
     $minBaseKm = $tripType === 'two-way' ? 250 * $tripDaysInt : 130;
     $perKmValue = $tripType === 'two-way' ? (float) $rateInfo['round_trip_per_km'] : (float) $rateInfo['one_way_per_km'];
@@ -157,8 +157,7 @@ try {
     if ($tripType === 'two-way') {
         $driverAllowanceValue = $tripDaysInt * (float) $rateInfo['round_trip_driver_bata'];
     } else {
-        $bataDays = max(1, (int) ceil($travelDistance / 400.0));
-        $driverAllowanceValue = $bataDays * (float) $rateInfo['one_way_driver_bata'];
+        $driverAllowanceValue = (float) $rateInfo['one_way_driver_bata'];
     }
     
     $baseFare = number_format($baseFareValue, 2, '.', '');
