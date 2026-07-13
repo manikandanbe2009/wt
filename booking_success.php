@@ -170,6 +170,13 @@ if ($bookingId === '') {
                     <span class="summary-row-label">Total Fare</span>
                     <strong class="summary-row-value">Rs. <?= htmlspecialchars(number_format((float) $booking['total_fare'], 2), ENT_QUOTES, 'UTF-8') ?></strong>
                   </div>
+                  <div class="payment-note-box" style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.04); border-radius: 8px; border-left: 3px solid #ffc107;">
+                    <?php if ($booking['trip_type'] === 'two-way'): ?>
+                      <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.5;"><strong>Note:</strong> Round trip minimum base KM is 250 Km/day. Driver Bata is charged per day. Actual bill amount might differ based on actual KMs travelled, Hill-station charges, Inter-state Permits, Toll Charges etc.</p>
+                    <?php else: ?>
+                      <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.5;"><strong>Note:</strong> One-way minimum base KM is 130 Km. Actual bill amount might differ based on actual KMs travelled, Waiting time, Hill-station charges, Inter-state Permits, Toll Charges etc.</p>
+                    <?php endif; ?>
+                  </div>
                 </div>
               </div>
 

@@ -326,7 +326,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
                   </div>
 
                   <div class="payment-note-box">
-                    <p><strong>Note:</strong> The actual bill amount might differ based on actual KMs travelled, Waiting time (for Oneway only), Hill-station charges, Inter-state Permits, Toll Charges etc.</p>
+                    <p id="summary-payment-note"><strong>Note:</strong> The actual bill amount might differ based on actual KMs travelled, Waiting time (for Oneway only), Hill-station charges, Inter-state Permits, Toll Charges etc.</p>
                   </div>
                 </div>
                 <p class="summary-status summary-status-success is-hidden" id="summary-success-msg"></p>
@@ -772,7 +772,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
     const WHATSAPP_NUMBER = '<?= env_value('WHATSAPP_NUMBER', '917009005354') ?>';
 
     // ── Helpers ────────────────────────────────────────────────────────────
-    const inr = (n) => Number(n) > 0 ? '₹ ' + Math.round(Number(n)).toLocaleString('en-IN') + '.00' : 'TBC';
+    const inr = (n) => (n === 'TBC' || n === null || n === undefined) ? 'TBC' : '₹ ' + Math.round(Number(n)).toLocaleString('en-IN') + '.00';
 
     // Predefined coordinates for common locations to avoid blocking bookings
     const PREDEFINED_LOCATIONS = {
@@ -1011,6 +1011,15 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White Call Taxi provid
         }
 
         document.getElementById('summary-total-amount-val').textContent = inr(item.estimatedFare);
+
+        const noteEl = document.getElementById('summary-payment-note');
+        if (noteEl) {
+          if (details.tripType === 'two-way') {
+            noteEl.innerHTML = `<strong>Note:</strong> Round trip minimum base KM is 250 Km/day. Driver Bata is charged per day. Actual bill amount might differ based on actual KMs travelled, Hill-station charges, Inter-state Permits, Toll Charges etc.`;
+          } else {
+            noteEl.innerHTML = `<strong>Note:</strong> One-way minimum base KM is 130 Km. Actual bill amount might differ based on actual KMs travelled, Waiting time, Hill-station charges, Inter-state Permits, Toll Charges etc.`;
+          }
+        }
 
         renderSummaryStatus(summarySuccessMsg, '');
         renderSummaryStatus(summaryErrorMsg, '');
