@@ -14,7 +14,7 @@ $rates = app_rate_table();
       'title' => 'Taxi Price in Chennai | One Way, Round Trip and Airport Fare | White Call Taxi',
       'description' => 'Check White Call Taxi pricing for one way outstation taxi, round trip cabs, local taxi packages and airport transfers in Chennai with transparent fare details.',
       'path' => '/pricing.php',
-      'image' => 'images/booking-taxi.png',
+      'image' => 'images/booking-taxi.webp',
       'type' => 'website',
       'headline' => 'Taxi price page for Chennai local, airport and outstation cab booking',
       'schema_type' => 'Service',
@@ -32,7 +32,7 @@ $rates = app_rate_table();
     <div class="container">
       <div class="nav-shell">
         <a class="brand" href="index.php" aria-label="White Call Taxi home">
-          <img class="brand-mark brand-mark-photo" src="images/logo.png" alt="White Call Taxi logo">
+          <img class="brand-mark brand-mark-photo" src="images/logo.webp" alt="White Call Taxi logo">
           <div class="brand-copy">
             <strong>WHITE CALL TAXI</strong>
             <span>Premium Reliable Safe</span>

@@ -11,7 +11,7 @@ require_once __DIR__ . '/seo.php';
       'title' => 'Taxi Fleet | Sedan, SUV and Premium Cabs | White Call Taxi',
       'description' => 'Explore the White Call Taxi fleet with sedan, SUV and premium cars for airport pickup, local travel, outstation rides and corporate bookings.',
       'path' => '/fleet.php',
-      'image' => 'images/premium-fleet.png',
+      'image' => 'images/premium-fleet.webp',
       'type' => 'website',
       'headline' => 'Sedan, SUV and premium taxi fleet options',
       'schema_type' => 'CollectionPage',
@@ -28,7 +28,7 @@ require_once __DIR__ . '/seo.php';
     <div class="container">
       <div class="nav-shell">
         <a class="brand" href="#home" aria-label="White Call Taxi home">
-          <img class="brand-mark brand-mark-photo" src="images/logo.png" alt="White Call Taxi logo">
+          <img class="brand-mark brand-mark-photo" src="images/logo.webp" alt="White Call Taxi logo">
           <div class="brand-copy">
             <strong>WHITE CALL TAXI</strong>
             <span>Premium Reliable Safe</span>
@@ -122,7 +122,7 @@ require_once __DIR__ . '/seo.php';
           <div class="fleet-grid">
             <article class="fleet-card" data-category="sedan">
               <div class="fleet-img">
-                <img src="images/sedan-etios-fleet.png" alt="Executive Sedan" loading="lazy" decoding="async" />
+                <img src="images/sedan-etios-fleet.webp" alt="Executive Sedan" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">Sedan</span>
@@ -145,7 +145,7 @@ require_once __DIR__ . '/seo.php';
 
             <article class="fleet-card" data-category="sedan">
               <div class="fleet-img">
-                <img src="images/swift-dzire-fleet.png" alt="Swift Dzire" loading="lazy" decoding="async" />
+                <img src="images/swift-dzire-fleet.webp" alt="Swift Dzire" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">Sedan</span>
@@ -167,7 +167,7 @@ require_once __DIR__ . '/seo.php';
 
             <article class="fleet-card" data-category="suv">
               <div class="fleet-img">
-                <img src="images/suv-ertiga-fleet.png" alt="Ertiga SUV" loading="lazy" decoding="async" />
+                <img src="images/suv-ertiga-fleet.webp" alt="Ertiga SUV" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">SUV</span>
@@ -190,7 +190,7 @@ require_once __DIR__ . '/seo.php';
             <article class="fleet-card" data-category="suv">
               <div class="fleet-img">
                 <img
-                  src="images/SUV-innova-crysta-car.png"
+                  src="images/SUV-innova-crysta-car.webp"
                   alt="Innova Crysta"
                   loading="lazy"
                   decoding="async"
@@ -216,7 +216,7 @@ require_once __DIR__ . '/seo.php';
 
             <article class="fleet-card" data-category="premium">
               <div class="fleet-img">
-                <img src="images/premium-fleet.png" alt="Premium Car" loading="lazy" decoding="async" />
+                <img src="images/premium-fleet.webp" alt="Premium Car" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">Premium</span>
@@ -238,7 +238,7 @@ require_once __DIR__ . '/seo.php';
 
             <article class="fleet-card" data-category="premium">
               <div class="fleet-img">
-                <img src="images/corporate-taxi.png" alt="Corporate Travel" loading="lazy" decoding="async" />
+                <img src="images/corporate-taxi.webp" alt="Corporate Travel" loading="lazy" decoding="async" />
               </div>
               <div class="fleet-body">
                 <span class="fleet-tag">Premium</span>
@@ -280,7 +280,7 @@ require_once __DIR__ . '/seo.php';
       <div class="container">
         <div class="app-card glass">
           <div class="phones">
-            <img src="images/booking-taxi.png" class="img-fluid" alt="Online taxi booking illustration" loading="lazy" decoding="async" >
+            <img src="images/booking-taxi.webp" class="img-fluid" alt="Online taxi booking illustration" loading="lazy" decoding="async" >
           </div>
 
           <div class="app-copy">

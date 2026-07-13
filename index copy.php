@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container">
       <div class="nav-shell">
         <a class="brand" href="#home" aria-label="White Call Taxi home">
-          <img class="brand-mark brand-mark-photo" src="images/logo.png" alt="White Call Taxi logo">
+          <img class="brand-mark brand-mark-photo" src="images/logo.webp" alt="White Call Taxi logo">
           <div class="brand-copy">
             <strong>WHITE CALL TAXI</strong>
             <span>Premium Reliable Safe</span>
@@ -465,7 +465,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <p>On-time airport pickup and drop with live coordination for arrivals and departures.</p>
             </div>
             <div class="service-image">
-              <img src="images/airport-call-taxi.png" alt="Airport transfer service">
+              <img src="images/airport-call-taxi.webp" alt="Airport transfer service">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -479,7 +479,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <p>Quick and comfortable rides within the city for daily travel, meetings and events.</p>
             </div>
             <div class="service-image">
-              <img src="images/city-call-taxi.png" alt="City rides service">
+              <img src="images/city-call-taxi.webp" alt="City rides service">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -493,7 +493,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <p>Safe long-distance travel with premium sedans and professional chauffeurs.</p>
             </div>
             <div class="service-image">
-              <img src="images/one-way-outstation-call-taxi.png" alt="Outstation service">
+              <img src="images/one-way-outstation-call-taxi.webp" alt="Outstation service">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -507,7 +507,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <p>Book by the hour for shopping, business travel or flexible day plans.</p>
             </div>
             <div class="service-image">
-              <img src="images/roundtrip-white-call-taxi.png" alt="Hourly rental service">
+              <img src="images/roundtrip-white-call-taxi.webp" alt="Hourly rental service">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -521,7 +521,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <p>Premium business transport solutions with polished service & support.</p>
             </div>
             <div class="service-image">
-              <img src="images/corporate-white-call-taxi.png" alt="Corporate travel service">
+              <img src="images/corporate-white-call-taxi.webp" alt="Corporate travel service">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -662,7 +662,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="container">
         <div class="app-card glass">
           <div class="phones">
-            <img src="images/booking-taxi.png" class="img-fluid" alt="booking-taxi" >
+            <img src="images/booking-taxi.webp" class="img-fluid" alt="booking-taxi" >
           </div>
 
           <div class="app-copy">
@@ -742,7 +742,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="footer-shell glass">
         <div class="footer-brand">
           <a class="brand footer-brand-row" href="#home" aria-label="White Call Taxi">
-            <img class="brand-mark footer-logo brand-mark-photo" src="images/logo.png" alt="White Call Taxi logo">
+            <img class="brand-mark footer-logo brand-mark-photo" src="images/logo.webp" alt="White Call Taxi logo">
             <div class="brand-copy footer-copy">
               <strong>WHITE CALL TAXI</strong>
               <span>Premium Taxi Service</span>

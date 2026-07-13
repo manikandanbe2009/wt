@@ -11,7 +11,7 @@ require_once __DIR__ . '/seo.php';
       'title' => 'Contact White Call Taxi | Chennai Taxi Booking Phone Number',
       'description' => 'Contact White Call Taxi for Chennai airport taxi, one way outstation cab, local rides and fare enquiries by phone, WhatsApp or email.',
       'path' => '/contact.php',
-      'image' => 'images/logo.png',
+      'image' => 'images/logo.webp',
       'type' => 'website',
       'headline' => 'Contact White Call Taxi for booking support and fare enquiries',
       'schema_type' => 'ContactPage',
@@ -28,7 +28,7 @@ require_once __DIR__ . '/seo.php';
     <div class="container">
       <div class="nav-shell">
         <a class="brand" href="index.php" aria-label="White Call Taxi home">
-          <img class="brand-mark brand-mark-photo" src="images/logo.png" alt="White Call Taxi logo">
+          <img class="brand-mark brand-mark-photo" src="images/logo.webp" alt="White Call Taxi logo">
           <div class="brand-copy">
             <strong>WHITE CALL TAXI</strong>
             <span>Premium Reliable Safe</span>

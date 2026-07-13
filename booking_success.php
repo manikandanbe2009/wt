@@ -59,7 +59,7 @@ if ($bookingId === '') {
       'title' => 'Booking Confirmed | White Call Taxi',
       'description' => 'White Call Taxi booking confirmation details.',
       'path' => '/booking_success.php',
-      'image' => 'images/logo.png',
+      'image' => 'images/logo.webp',
       'type' => 'website',
       'headline' => 'Taxi booking confirmation',
       'schema_type' => 'WebPage',

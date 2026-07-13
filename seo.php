@@ -24,7 +24,7 @@ function app_seo_render(array $page): void
     $description = (string) ($page['description'] ?? 'White Call Taxi offers safe, reliable taxi service for airport, city, outstation and corporate rides.');
     $path = (string) ($page['path'] ?? '/');
     $robots = (string) ($page['robots'] ?? 'index, follow');
-    $image = (string) ($page['image'] ?? 'images/logo.png');
+    $image = (string) ($page['image'] ?? 'images/logo.webp');
     $type = (string) ($page['type'] ?? 'website');
     $headline = (string) ($page['headline'] ?? $title);
     $schemaType = (string) ($page['schema_type'] ?? 'WebPage');
@@ -42,7 +42,7 @@ function app_seo_render(array $page): void
                 '@id' => app_canonical_url('/#organization'),
                 'name' => 'White Call Taxi',
                 'url' => app_base_url() . '/',
-                'logo' => app_canonical_url('images/logo.png'),
+                'logo' => app_canonical_url('images/logo.webp'),
                 'image' => $imageUrl,
                 'telephone' => $phone,
                 'email' => $email,

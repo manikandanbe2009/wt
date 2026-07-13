@@ -11,7 +11,7 @@ require_once __DIR__ . '/seo.php';
       'title' => 'About White Call Taxi | Safe and Reliable Taxi Service',
       'description' => 'Learn about White Call Taxi, our verified drivers, clean vehicles and reliable taxi support for airport, city, outstation and corporate travel.',
       'path' => '/about.php',
-      'image' => 'images/about-us-image.png',
+      'image' => 'images/about-us-image.webp',
       'type' => 'article',
       'headline' => 'About White Call Taxi and our trusted travel service',
       'schema_type' => 'AboutPage',
@@ -28,7 +28,7 @@ require_once __DIR__ . '/seo.php';
     <div class="container">
       <div class="nav-shell">
         <a class="brand" href="#home" aria-label="White Call Taxi home">
-          <img class="brand-mark brand-mark-photo" src="images/logo.png" alt="White Call Taxi logo">
+          <img class="brand-mark brand-mark-photo" src="images/logo.webp" alt="White Call Taxi logo">
           <div class="brand-copy">
             <strong>WHITE CALL TAXI</strong>
             <span>Premium Reliable Safe</span>
@@ -133,7 +133,7 @@ require_once __DIR__ . '/seo.php';
         <div class="container">
           <div class="intro-grid">
             <div class="intro-image">
-              <img src="images/about-us-image.png" alt="White Call Taxi car" loading="lazy" decoding="async" />
+              <img src="images/about-us-image.webp" alt="White Call Taxi car" loading="lazy" decoding="async" />
             </div>
 
             <div class="intro-content">
@@ -265,7 +265,7 @@ require_once __DIR__ . '/seo.php';
       <div class="container">
         <div class="app-card glass">
           <div class="phones">
-            <img src="images/booking-taxi.png" class="img-fluid" alt="Online taxi booking illustration" loading="lazy" decoding="async" >
+            <img src="images/booking-taxi.webp" class="img-fluid" alt="Online taxi booking illustration" loading="lazy" decoding="async" >
           </div>
 
           <div class="app-copy">

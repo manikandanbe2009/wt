@@ -11,7 +11,7 @@ require_once __DIR__ . '/seo.php';
       'title' => 'Taxi Services in Chennai | Airport, Outstation and Local Cabs | White Call Taxi',
       'description' => 'Explore White Call Taxi services for Chennai airport transfers, one way outstation taxi, round trip cabs, local rides and corporate travel with fast booking support.',
       'path' => '/services.php',
-      'image' => 'images/one-way-outstation-call-taxi.png',
+      'image' => 'images/one-way-outstation-call-taxi.webp',
       'type' => 'website',
       'headline' => 'White Call Taxi services in Chennai for local, airport and outstation travel',
       'schema_type' => 'Service',
@@ -29,7 +29,7 @@ require_once __DIR__ . '/seo.php';
     <div class="container">
       <div class="nav-shell">
         <a class="brand" href="index.php" aria-label="White Call Taxi home">
-          <img class="brand-mark brand-mark-photo" src="images/logo.png" alt="White Call Taxi logo">
+          <img class="brand-mark brand-mark-photo" src="images/logo.webp" alt="White Call Taxi logo">
           <div class="brand-copy">
             <strong>WHITE CALL TAXI</strong>
             <span>Premium Reliable Safe</span>
@@ -111,7 +111,7 @@ require_once __DIR__ . '/seo.php';
               <p>On-time Chennai airport taxi for departure and arrival travel with clean cars and live driver coordination.</p>
             </div>
             <div class="service-image">
-              <img src="images/airport-call-taxi.png" alt="Airport taxi service" loading="lazy" decoding="async">
+              <img src="images/airport-call-taxi.webp" alt="Airport taxi service" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -123,7 +123,7 @@ require_once __DIR__ . '/seo.php';
               <p>Affordable intercity taxi service for Chennai to Bangalore, Pondicherry, Trichy, Madurai and more routes.</p>
             </div>
             <div class="service-image">
-              <img src="images/one-way-outstation-call-taxi.png" alt="One way outstation taxi" loading="lazy" decoding="async">
+              <img src="images/one-way-outstation-call-taxi.webp" alt="One way outstation taxi" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -135,7 +135,7 @@ require_once __DIR__ . '/seo.php';
               <p>Flexible round trip cab booking for family travel, pilgrim routes, business visits and weekend plans.</p>
             </div>
             <div class="service-image">
-              <img src="images/roundtrip-white-call-taxi.png" alt="Round trip outstation taxi" loading="lazy" decoding="async">
+              <img src="images/roundtrip-white-call-taxi.webp" alt="Round trip outstation taxi" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -147,7 +147,7 @@ require_once __DIR__ . '/seo.php';
               <p>Convenient local taxi service in Chennai for shopping, meetings, hospital visits and full-day city travel.</p>
             </div>
             <div class="service-image">
-              <img src="images/city-call-taxi.png" alt="Local city taxi service" loading="lazy" decoding="async">
+              <img src="images/city-call-taxi.webp" alt="Local city taxi service" loading="lazy" decoding="async">
               <div class="service-arrow">&rarr;</div>
             </div>
           </article>
@@ -159,7 +159,7 @@ require_once __DIR__ . '/seo.php';
       <div class="container">
         <div class="intro-grid">
           <div class="intro-image">
-            <img src="images/about-us-image.png" alt="Taxi service in Chennai" loading="lazy" decoding="async">
+            <img src="images/about-us-image.webp" alt="Taxi service in Chennai" loading="lazy" decoding="async">
           </div>
           <div class="intro-content">
             <p class="section-label">SEO Content</p>
