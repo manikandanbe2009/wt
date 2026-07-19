@@ -420,7 +420,23 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
                   </div>
                   <div class="field">
                     <label class="sr-only" for="time">Time</label>
-                    <input id="time" name="time" type="time" value="<?= booking_value($bookingData, 'time') ?>" required>
+                    <select id="time" name="time" required>
+                      <option value="">-- Select Time --</option>
+                      <?php
+                      $currentTimeVal = $bookingData['time'] ?? '10:00';
+                      if (strlen($currentTimeVal) > 5) {
+                          $currentTimeVal = substr($currentTimeVal, 0, 5);
+                      }
+                      for ($h = 0; $h < 24; $h++) {
+                          for ($m = 0; $m < 60; $m += 15) {
+                              $val = sprintf('%02d:%02d', $h, $m);
+                              $display = date('h:i A', strtotime($val));
+                              $selected = ($currentTimeVal === $val) ? 'selected' : '';
+                              echo "<option value=\"$val\" $selected>$display</option>";
+                          }
+                      }
+                      ?>
+                    </select>
                     <?php if (isset($bookingErrors['time'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['time'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
                   </div>
                 </div>
@@ -453,44 +469,44 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
     </section>
 
     <?php if ($selectedRoute): ?>
-      <section class="section route-info-section" style="padding: 60px 0; background: rgba(255, 255, 255, 0.02); border-bottom: 1px solid rgba(255,255,255,0.05);">
+      <section class="section route-info-section" style="padding: 60px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(109, 82, 14, 0.015);">
         <div class="container">
-          <div class="section-heading" style="text-align: left; margin-bottom: 30px;">
-            <span style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #ffc107; font-weight: 700;">Route Travel Guide</span>
-            <h2 style="font-size: 28px; margin-top: 10px; color: #fff; font-weight: 800;">Traveling from <?= htmlspecialchars($selectedRoute['pickup']) ?> to <?= htmlspecialchars($selectedRoute['drop']) ?> by Taxi</h2>
+          <div class="section-heading" style="text-align: left; margin-bottom: 30px; justify-content: flex-start;">
+            <span style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #78580b; font-weight: 700;">Route Travel Guide</span>
+            <h2 style="font-size: 28px; margin-top: 10px; color: var(--text); font-weight: 800;">Traveling from <?= htmlspecialchars($selectedRoute['pickup']) ?> to <?= htmlspecialchars($selectedRoute['drop']) ?> by Taxi</h2>
           </div>
           <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; margin-top: 30px;">
-            <div style="color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.7;">
+            <div style="color: var(--muted); font-size: 15px; line-height: 1.7;">
               <p>Planning a journey from <strong><?= htmlspecialchars($selectedRoute['pickup']) ?> to <?= htmlspecialchars($selectedRoute['drop']) ?></strong>? Booking a premium outstation cab with <strong>White One Way Drop Taxi</strong> is the absolute best way to travel comfortably and stress-free. Avoid the crowds of public buses, the hassle of waiting lists for train tickets, and the exhaustion of driving long distances yourself.</p>
-              <p style="margin-top: 15px;">We offer customized options tailored to your specific travel needs. Choose our dedicated **One-Way Drop Taxi service** if you need a point-to-point drop-off without paying for return fares, or book our value-packed **Round-Trip Taxi packages** for weekend visits, business sightseeing, or family vacations. Our well-maintained fleet of Sedans, SUVs, and Premium cabs is fully air-conditioned and driven by background-checked, route-expert chauffeurs.</p>
+              <p style="margin-top: 15px;">We offer customized options tailored to your specific travel needs. Choose our dedicated <strong>One-Way Drop Taxi service</strong> if you need a point-to-point drop-off without paying for return fares, or book our value-packed <strong>Round-Trip Taxi packages</strong> for weekend visits, business sightseeing, or family vacations. Our well-maintained fleet of Sedans, SUVs, and Premium cabs is fully air-conditioned and driven by background-checked, route-expert chauffeurs.</p>
               <p style="margin-top: 15px;">Each trip comes with professional support, on-time pickups, direct route optimization, and transparent pricing. There are absolutely no hidden fees; you only pay what you see in your booking summary!</p>
             </div>
-            <div style="background: rgba(255,255,255,0.03); padding: 24px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); align-self: start;">
-              <h4 style="color: #fff; margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid #ffc107; padding-bottom: 8px; display: inline-block; font-weight: 700;">Trip Quick Facts</h4>
+            <div style="background: var(--surface); padding: 24px; border-radius: 12px; border: 1px solid var(--line); box-shadow: var(--shadow); align-self: start; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+              <h4 style="color: var(--text); margin-bottom: 20px; font-size: 18px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; display: inline-block; font-weight: 700;">Trip Quick Facts</h4>
               <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
-                  <span style="color: rgba(255,255,255,0.5);">Pickup City:</span>
-                  <strong style="color: #fff;"><?= htmlspecialchars($selectedRoute['pickup']) ?></strong>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+                  <span style="color: var(--muted);">Pickup City:</span>
+                  <strong style="color: var(--text);"><?= htmlspecialchars($selectedRoute['pickup']) ?></strong>
                 </div>
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
-                  <span style="color: rgba(255,255,255,0.5);">Destination:</span>
-                  <strong style="color: #fff;"><?= htmlspecialchars($selectedRoute['drop']) ?></strong>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+                  <span style="color: var(--muted);">Destination:</span>
+                  <strong style="color: var(--text);"><?= htmlspecialchars($selectedRoute['drop']) ?></strong>
                 </div>
-                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
-                  <span style="color: rgba(255,255,255,0.5);">Travel Types:</span>
-                  <strong style="color: #ffc107;">One-Way & Round-Trip</strong>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding-bottom: 8px;">
+                  <span style="color: var(--muted);">Travel Types:</span>
+                  <strong style="color: #78580b;">One-Way & Round-Trip</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; padding-bottom: 8px;">
-                  <span style="color: rgba(255,255,255,0.5);">Driver Allowance:</span>
-                  <strong style="color: #fff;">Included in Estimate</strong>
+                  <span style="color: var(--muted);">Driver Allowance:</span>
+                  <strong style="color: var(--text);">Included in Estimate</strong>
                 </div>
               </div>
             </div>
           </div>
           
-          <div style="margin-top: 40px; background: rgba(255,255,255,0.01); padding: 24px; border-radius: 12px; border-left: 4px solid #ffc107; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);">
-            <h4 style="color: #fff; font-size: 18px; margin-bottom: 12px; font-weight: 700;">Tolls, Highways & Road Conditions</h4>
-            <p style="color: rgba(255,255,255,0.85); font-size: 14.5px; margin: 0; line-height: 1.7;">The highway route between <?= htmlspecialchars($selectedRoute['pickup']) ?> and <?= htmlspecialchars($selectedRoute['drop']) ?> is composed of national highways with smooth traffic and multiple toll plaza corridors. Our cabs are fully equipped with active **Fastag** transponders to bypass toll cash lanes swiftly and automatically. Along the way, your chauffeur will easily guide you to excellent highway restaurants, clean rest stops, and fuel stations for a pleasant journey.</p>
+          <div style="margin-top: 40px; background: var(--surface); padding: 24px; border-radius: 12px; border-left: 4px solid var(--primary); border-top: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+            <h4 style="color: var(--text); font-size: 18px; margin-bottom: 12px; font-weight: 700;">Tolls, Highways & Road Conditions</h4>
+            <p style="color: var(--muted); font-size: 14.5px; margin: 0; line-height: 1.7;">The highway route between <?= htmlspecialchars($selectedRoute['pickup']) ?> and <?= htmlspecialchars($selectedRoute['drop']) ?> is composed of national highways with smooth traffic and multiple toll plaza corridors. Our cabs are fully equipped with active <strong>Fastag</strong> transponders to bypass toll cash lanes swiftly and automatically. Along the way, your chauffeur will easily guide you to excellent highway restaurants, clean rest stops, and fuel stations for a pleasant journey.</p>
           </div>
         </div>
       </section>

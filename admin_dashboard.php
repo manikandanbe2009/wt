@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
                 continue;
             }
 
-            $stmt->bind_param('sddddddds', $name, $oneWayBaseFare, $roundTripBaseFare, $oneWayPerKm, $roundTripPerKm, $oneWayDriverBata, $roundTripDriverBata, $code);
+            $stmt->bind_param('sdddddds', $name, $oneWayBaseFare, $roundTripBaseFare, $oneWayPerKm, $roundTripPerKm, $oneWayDriverBata, $roundTripDriverBata, $code);
             $stmt->execute();
         }
 

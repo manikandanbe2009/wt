@@ -139,9 +139,13 @@ function app_ensure_schema(mysqli $db): void
         $db->query(
             'UPDATE cab_fares
              SET round_trip_driver_bata = CASE
-                 WHEN round_trip_driver_bata = 0 THEN driver_allowance
-                 ELSE round_trip_driver_bata
-             END'
+                     WHEN round_trip_driver_bata = 0 THEN driver_allowance
+                     ELSE round_trip_driver_bata
+                 END,
+                 one_way_driver_bata = CASE
+                     WHEN one_way_driver_bata = 0 THEN driver_allowance
+                     ELSE one_way_driver_bata
+                 END'
         );
     }
 
@@ -155,10 +159,10 @@ function app_ensure_schema(mysqli $db): void
     );
 
     $defaultFares = [
-        'SEDAN' => ['Sedan', 150, 150, 14, 14, 0, 300],
-        'ETIOS' => ['Etios', 140, 140, 13, 13, 0, 300],
-        'SUV' => ['SUV', 220, 220, 19, 19, 0, 400],
-        'INNOVA' => ['Innova', 260, 260, 20, 20, 0, 450],
+        'SEDAN' => ['Sedan', 150, 150, 14, 14, 300, 300],
+        'ETIOS' => ['Etios', 140, 140, 13, 13, 300, 300],
+        'SUV' => ['SUV', 220, 220, 19, 19, 400, 400],
+        'INNOVA' => ['Innova', 260, 260, 20, 20, 450, 450],
     ];
 
     $fareStmt = $db->prepare(
