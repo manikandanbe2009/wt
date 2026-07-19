@@ -792,7 +792,7 @@ select {
   padding: 8px 10px;
   border-radius: 14px;
   border: 1px solid rgba(146, 157, 215, 0.22);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.7);
   color: #465588;
   font-size: 0.85rem;
   font-weight: 700;
@@ -800,9 +800,9 @@ select {
 }
 
 .trip-option input:checked + span {
-  color: #fff;
+  color: #000;
   border-color: transparent;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  background: linear-gradient(135deg, var(--primary), var(--primary));
   box-shadow: 0 12px 26px rgba(122, 77, 255, 0.22);
 }
 

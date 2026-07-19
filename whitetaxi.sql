@@ -46,9 +46,10 @@ CREATE TABLE IF NOT EXISTS `cab_fares` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `cab_fares` (`vehicle_code`, `vehicle_name`, `one_way_base_fare`, `round_trip_base_fare`, `one_way_per_km`, `round_trip_per_km`, `one_way_driver_bata`, `round_trip_driver_bata`) VALUES
-('SEDAN', 'Sedan', 150.00, 150.00, 14.00, 14.00, 0.00, 300.00),
-('ETIOS', 'Etios', 140.00, 140.00, 13.00, 13.00, 0.00, 300.00),
-('SUV', 'SUV', 220.00, 220.00, 19.00, 19.00, 0.00, 400.00),
-('INNOVA', 'Innova', 260.00, 260.00, 20.00, 20.00, 0.00, 450.00)
+('SEDAN', 'Sedan', 150.00, 150.00, 14.00, 14.00, 300.00, 300.00),
+('ETIOS', 'Etios', 140.00, 140.00, 13.00, 13.00, 300.00, 300.00),
+('SUV', 'SUV', 220.00, 220.00, 19.00, 19.00, 400.00, 400.00),
+('INNOVA', 'Innova', 260.00, 260.00, 20.00, 20.00, 450.00, 450.00),
+('CRYSTA', 'Innova Crysta', 300.00, 300.00, 24.00, 22.00, 400.00, 400.00)
 ON DUPLICATE KEY UPDATE
   `vehicle_name` = VALUES(`vehicle_name`);

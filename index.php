@@ -1028,7 +1028,8 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
           'SEDAN': '2 Luggages | Etios, Dzire or Similar',
           'ETIOS': '2 Luggages | Etios, Dzire or Similar',
           'SUV': '3 Luggages | Ertiga or Similar',
-          'INNOVA': '4 Luggages | Innova, Crysta or Similar'
+          'INNOVA': '4 Luggages | Innova, Crysta or Similar',
+          'CRYSTA': '4 Luggages | Innova Crysta'
         };
         const vehicleDesc = descriptions[item.vehicleCode.toUpperCase()] || 'Comfortable AC Cab';
 
@@ -1300,7 +1301,8 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
             'SEDAN': '2 Luggages | Etios, Dzire or Similar',
             'ETIOS': '2 Luggages | Etios, Dzire or Similar',
             'SUV': '3 Luggages | Ertiga or Similar',
-            'INNOVA': '4 Luggages | Innova, Crysta or Similar'
+            'INNOVA': '4 Luggages | Innova, Crysta or Similar',
+            'CRYSTA': '4 Luggages | Innova Crysta'
           };
           const vehicleDesc = descriptions[selectedCabType.toUpperCase()] || 'Comfortable AC Cab';
 

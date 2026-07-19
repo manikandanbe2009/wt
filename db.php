@@ -163,6 +163,7 @@ function app_ensure_schema(mysqli $db): void
         'ETIOS' => ['Etios', 140, 140, 13, 13, 300, 300],
         'SUV' => ['SUV', 220, 220, 19, 19, 400, 400],
         'INNOVA' => ['Innova', 260, 260, 20, 20, 450, 450],
+        'CRYSTA' => ['Innova Crysta', 300, 300, 24, 22, 400, 400],
     ];
 
     $fareStmt = $db->prepare(
