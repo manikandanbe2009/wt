@@ -132,9 +132,11 @@ $businessEmail = env_value('BUSINESS_EMAIL', 'info@whitecalltaxi.com');
 $businessPhone = env_value('BUSINESS_PHONE', '+91 70090 05354');
 $smtpFrom      = env_value('SMTP_FROM', $businessEmail);
 
-$tripTypeLabel = $tripType === 'two-way'
-    ? "Round Trip ({$tripDays} day" . ($tripDays != '1' ? 's' : '') . ')'
-    : 'One Way';
+$tripTypeLabel = $tripType === 'city-ride'
+    ? "City Ride ({$tripDays} hr" . ($tripDays != '1' ? 's' : '') . ')'
+    : ($tripType === 'two-way'
+        ? "Round Trip ({$tripDays} day" . ($tripDays != '1' ? 's' : '') . ')'
+        : 'One Way');
 
 try {
     $rateTable = app_rate_table();
@@ -147,17 +149,29 @@ try {
     $tripDaysInt = max(1, (int) ($tripDays === '' ? 1 : (int) $tripDays));
     $travelDistance = (float) $distanceKm;
     
-    $minBaseKm = $tripType === 'two-way' ? 250 * $tripDaysInt : 130;
-    $perKmValue = $tripType === 'two-way' ? (float) $rateInfo['round_trip_per_km'] : (float) $rateInfo['one_way_per_km'];
-    
-    $baseFareValue = $minBaseKm * $perKmValue;
-    $additionalDistance = max(0.0, $travelDistance - $minBaseKm);
-    $distChargeValue = $additionalDistance * $perKmValue;
-    
-    if ($tripType === 'two-way') {
-        $driverAllowanceValue = $tripDaysInt * (float) $rateInfo['round_trip_driver_bata'];
+    if ($tripType === 'city-ride') {
+        $hours = $tripDaysInt;
+        $isLarge = in_array($vehicle, ['SUV', 'INNOVA', 'CRYSTA'], true);
+        $hourlyRate = $isLarge ? 450.0 : 300.0;
+        $extraRate = $isLarge ? 35.0 : 25.0;
+        
+        $minBaseKm = $hours * 10;
+        $perKmValue = $extraRate;
+        $baseFareValue = $hours * $hourlyRate;
+        $additionalDistance = max(0.0, $travelDistance - $minBaseKm);
+        $distChargeValue = $additionalDistance * $perKmValue;
+        $driverAllowanceValue = 0.0;
     } else {
-        $driverAllowanceValue = (float) $rateInfo['one_way_driver_bata'];
+        $minBaseKm = $tripType === 'two-way' ? 250 * $tripDaysInt : 130;
+        $perKmValue = $tripType === 'two-way' ? (float) $rateInfo['round_trip_per_km'] : (float) $rateInfo['one_way_per_km'];
+        $baseFareValue = $minBaseKm * $perKmValue;
+        $additionalDistance = max(0.0, $travelDistance - $minBaseKm);
+        $distChargeValue = $additionalDistance * $perKmValue;
+        if ($tripType === 'two-way') {
+            $driverAllowanceValue = $tripDaysInt * (float) $rateInfo['round_trip_driver_bata'];
+        } else {
+            $driverAllowanceValue = (float) $rateInfo['one_way_driver_bata'];
+        }
     }
     
     $baseFare = number_format($baseFareValue, 2, '.', '');
@@ -303,7 +317,7 @@ $htmlBody = '<!DOCTYPE html>
           <td align="right" style="padding:12px 16px;color:#fff;font-size:13px;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.06);">Rs. ' . htmlspecialchars($baseFare, ENT_QUOTES) . '</td>
         </tr>
         <tr>
-          <td style="padding:12px 16px;color:rgba(255,255,255,0.65);font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);">Distance (' . htmlspecialchars($distanceKm, ENT_QUOTES) . ' km x Rs.' . htmlspecialchars($perKm, ENT_QUOTES) . '/km)</td>
+          <td style="padding:12px 16px;color:rgba(255,255,255,0.65);font-size:13px;border-bottom:1px solid rgba(255,255,255,0.06);">' . ($tripType === 'city-ride' ? 'Extra Distance (' . number_format(max(0.0, (float)$distanceKm - ($tripDaysInt * 10)), 1) . ' km x Rs.' . htmlspecialchars($perKm, ENT_QUOTES) . '/km)' : 'Distance (' . htmlspecialchars($distanceKm, ENT_QUOTES) . ' km x Rs.' . htmlspecialchars($perKm, ENT_QUOTES) . '/km)') . '</td>
           <td align="right" style="padding:12px 16px;color:#fff;font-size:13px;font-weight:600;border-bottom:1px solid rgba(255,255,255,0.06);">Rs. ' . htmlspecialchars($distCharge, ENT_QUOTES) . '</td>
         </tr>';
 

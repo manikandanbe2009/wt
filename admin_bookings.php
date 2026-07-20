@@ -95,7 +95,13 @@ $bookings = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 </td>
                 <td>
                   <?= htmlspecialchars(app_vehicle_label((string) $booking['vehicle']), ENT_QUOTES, 'UTF-8') ?><br>
-                  <span class="admin-muted"><?= htmlspecialchars((string) $booking['trip_type'], ENT_QUOTES, 'UTF-8') ?> / <?= htmlspecialchars((string) $booking['trip_days'], ENT_QUOTES, 'UTF-8') ?> day(s)</span>
+                  <span class="admin-muted">
+                    <?php if ($booking['trip_type'] === 'city-ride'): ?>
+                      City Ride / <?= htmlspecialchars((string) $booking['trip_days'], ENT_QUOTES, 'UTF-8') ?> hr(s)
+                    <?php else: ?>
+                      <?= htmlspecialchars(ucwords(str_replace('-', ' ', (string) $booking['trip_type'])), ENT_QUOTES, 'UTF-8') ?> / <?= htmlspecialchars((string) $booking['trip_days'], ENT_QUOTES, 'UTF-8') ?> day(s)
+                    <?php endif; ?>
+                  </span>
                 </td>
                 <td>
                   <strong>Rs. <?= htmlspecialchars(number_format((float) $booking['total_fare'], 2), ENT_QUOTES, 'UTF-8') ?></strong><br>

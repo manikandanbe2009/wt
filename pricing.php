@@ -144,15 +144,15 @@ $rates = app_rate_table();
           </div>
 
           <div class="fare-card">
-            <h5>LOCAL AND AIRPORT</h5>
-            <h3>City ride and airport fare</h3>
-            <p>Chennai local packages and airport transfer pricing.</p>
-            <div class="fare-row"><span>4 hrs / 40 km</span><strong>from Rs.1,199</strong></div>
-            <div class="fare-row"><span>8 hrs / 80 km</span><strong>from Rs.2,200</strong></div>
-            <div class="fare-row"><span>Airport pickup / drop</span><strong>from Rs.799</strong></div>
+            <h5>CITY RIDE (LOCAL)</h5>
+            <h3>Local hourly packages</h3>
+            <p>Chennai local city ride packages and hourly booking rates.</p>
+            <div class="fare-row"><span>Sedan / Etios</span><strong>Rs. 300 / hr (incl. 10 Km)</strong></div>
+            <div class="fare-row"><span>SUV / Innova / Crysta</span><strong>Rs. 450 / hr (incl. 10 Km)</strong></div>
             <div class="fare-line"></div>
-            <small>Extra hour and extra kilometer charges can be added separately.</small>
-            <small>Parking charges may apply on actuals.</small>
+            <small>Sedan / Etios extra distance: Rs. 25 / Km.</small>
+            <small>SUV / Innova / Crysta extra distance: Rs. 35 / Km.</small>
+            <small>All hourly packages scale proportionally (e.g. 3 hrs includes 30 Km).</small>
           </div>
         </div>
       </div>

@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (!in_array($bookingData['trip_type'], ['one-way', 'two-way'], true)) {
+    if (!in_array($bookingData['trip_type'], ['one-way', 'two-way', 'city-ride'], true)) {
         $bookingErrors['trip_type'] = 'Select a valid trip type.';
     }
     if ($bookingData['name'] === '') {
@@ -57,6 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bookingErrors['trip_days'] = 'Enter the number of days for the round trip.';
         } elseif (filter_var($bookingData['trip_days'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 30]]) === false) {
             $bookingErrors['trip_days'] = 'Days must be between 1 and 30.';
+        }
+    } elseif ($bookingData['trip_type'] === 'city-ride') {
+        if ($bookingData['trip_days'] === '') {
+            $bookingErrors['trip_days'] = 'Select package hours.';
+        } elseif (filter_var($bookingData['trip_days'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 24]]) === false) {
+            $bookingErrors['trip_days'] = 'Hours must be between 1 and 24.';
         }
     }
     if ($bookingData['pickup'] === '') {
@@ -93,8 +99,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
 
         foreach ($vehiclesToEstimate as $vehicleName => $rateInfo) {
-            $travelDistance  = $bookingData['trip_type'] === 'two-way' ? $distanceKm * 2 : $distanceKm;
-            if ($bookingData['trip_type'] === 'two-way') {
+            if ($bookingData['trip_type'] === 'city-ride') {
+                $hours = max(1, (int) $bookingData['trip_days']);
+                $isLarge = in_array($vehicleName, ['SUV', 'INNOVA', 'CRYSTA'], true);
+                $hourlyRate = $isLarge ? 450.0 : 300.0;
+                $extraRate = $isLarge ? 35.0 : 25.0;
+                
+                $minBaseKm = $hours * 10;
+                $perKmValue = $extraRate;
+                $baseFareValue = $hours * $hourlyRate;
+                $additionalDistance = max(0.0, $distanceKm - $minBaseKm);
+                $distanceFare = $additionalDistance * $extraRate;
+                $driverAllowance = 0.0;
+                $travelDistance = $distanceKm;
+            } elseif ($bookingData['trip_type'] === 'two-way') {
                 $minBaseKm       = 250 * $tripDays;
                 $perKmValue      = (float) $rateInfo['round_trip_per_km'];
                 $baseFareValue   = $minBaseKm * $perKmValue;
@@ -108,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $additionalDistance = max(0.0, $travelDistance - $minBaseKm);
                 $distanceFare    = $additionalDistance * $perKmValue;
                 $driverAllowance = (float) $rateInfo['one_way_driver_bata'];
+                $travelDistance  = $distanceKm;
             }
             $estimatedFare   = $baseFareValue + $distanceFare + $driverAllowance;
 
@@ -254,15 +273,30 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
                     <div class="estimate-top"><h4><?= htmlspecialchars($estimation['vehicle_name'], ENT_QUOTES, 'UTF-8') ?></h4></div>
                     <p class="estimate-price">Rs. <?= number_format($estimation['estimated_fare'], 0) ?></p>
                     <?php 
-                      $minBaseKm = $bookingData['trip_type'] === 'two-way' ? 250 * $tripDays : 130;
-                      $additionalKm = max(0.0, $estimation['travel_distance'] - $minBaseKm);
-                      $additionalFare = $additionalKm * $estimation['per_km'];
+                      $isCityRide = ($bookingData['trip_type'] === 'city-ride');
+                      if ($isCityRide) {
+                          $minBaseKm = $tripDays * 10;
+                          $additionalKm = max(0.0, $estimation['travel_distance'] - $minBaseKm);
+                          $additionalFare = $additionalKm * $estimation['per_km'];
+                      } else {
+                          $minBaseKm = $bookingData['trip_type'] === 'two-way' ? 250 * $tripDays : 130;
+                          $additionalKm = max(0.0, $estimation['travel_distance'] - $minBaseKm);
+                          $additionalFare = $additionalKm * $estimation['per_km'];
+                      }
                     ?>
-                    <p class="estimate-meta">Base Fare [<?= $minBaseKm ?> Km]: Rs. <?= number_format($estimation['base_fare'], 0) ?></p>
-                    <?php if ($additionalKm > 0): ?>
-                      <p class="estimate-meta">Additional [<?= number_format($additionalKm, 1) ?> Km]: Rs. <?= number_format($additionalFare, 0) ?></p>
+                    <?php if ($isCityRide): ?>
+                      <p class="estimate-meta">Base Fare [<?= $tripDays ?> Hr / <?= $minBaseKm ?> Km]: Rs. <?= number_format($estimation['base_fare'], 0) ?></p>
+                      <?php if ($additionalKm > 0): ?>
+                        <p class="estimate-meta">Additional [<?= number_format($additionalKm, 1) ?> Km]: Rs. <?= number_format($additionalFare, 0) ?></p>
+                      <?php endif; ?>
+                      <p class="estimate-meta">Driver Bata: Included</p>
+                    <?php else: ?>
+                      <p class="estimate-meta">Base Fare [<?= $minBaseKm ?> Km]: Rs. <?= number_format($estimation['base_fare'], 0) ?></p>
+                      <?php if ($additionalKm > 0): ?>
+                        <p class="estimate-meta">Additional [<?= number_format($additionalKm, 1) ?> Km]: Rs. <?= number_format($additionalFare, 0) ?></p>
+                      <?php endif; ?>
+                      <p class="estimate-meta">Driver Bata: Rs. <?= number_format($estimation['driver_allowance'], 0) ?></p>
                     <?php endif; ?>
-                    <p class="estimate-meta">Driver Bata: Rs. <?= number_format($estimation['driver_allowance'], 0) ?></p>
                     <button class="estimate-select-btn" type="button">Confirm Cab &rarr;</button>
                   </article>
                 <?php endforeach; ?>
@@ -364,6 +398,10 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
                     <input type="radio" name="trip_type" value="two-way" <?= $bookingData['trip_type'] === 'two-way' ? 'checked' : '' ?>>
                     <span>Round Trip</span>
                   </label>
+                  <label class="trip-option">
+                    <input type="radio" name="trip_type" value="city-ride" <?= $bookingData['trip_type'] === 'city-ride' ? 'checked' : '' ?>>
+                    <span>City Ride</span>
+                  </label>
                 </div>
                 <?php if (isset($bookingErrors['trip_type'])): ?>
                   <p class="field-error form-field-error"><?= htmlspecialchars($bookingErrors['trip_type'], ENT_QUOTES, 'UTF-8') ?></p>
@@ -412,6 +450,28 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
                   <p class="field-error form-field-error"><?= htmlspecialchars($bookingErrors['distance_km'], ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
 
+                <div class="field-row field-row-compact" id="city-and-hours-row" <?= $bookingData['trip_type'] !== 'city-ride' ? 'style="display: none;"' : '' ?>>
+                  <div class="field">
+                    <label class="sr-only" for="city-select">Select City</label>
+                    <select id="city-select" name="city_select">
+                      <option value="Chennai">Chennai</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label class="sr-only" for="trip-hours">Package Hours</label>
+                    <select id="trip-hours" name="trip_hours">
+                      <?php
+                      $currentHours = $bookingData['trip_days'] ?? '';
+                      for ($h = 1; $h <= 12; $h++) {
+                          $selected = ((string)$currentHours === (string)$h) ? 'selected' : '';
+                          $allowedKm = $h * 10;
+                          echo "<option value=\"$h\" $selected>$h Hour(s) ($allowedKm Km)</option>";
+                      }
+                      ?>
+                    </select>
+                  </div>
+                </div>
+
                 <div class="field-row field-row-compact">
                   <div class="field">
                     <label class="sr-only" for="date">Date</label>
@@ -442,7 +502,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
                 </div>
               
                 <div class="field-row field-row-compact">
-                    <div class="field trip-days-field" id="trip-days-field" <?= $bookingData['trip_type'] !== 'two-way' ? 'hidden' : '' ?>>
+                    <div class="field trip-days-field" id="trip-days-field" <?= $bookingData['trip_type'] !== 'two-way' ? 'style="display: none;"' : '' ?>>
                   <label class="sr-only" for="trip-days">Trip Days</label>
                   <input id="trip-days" name="trip_days" type="number" min="1" max="30" placeholder="Enter number of days" value="<?= booking_value($bookingData, 'trip_days') ?>">
                   <?php if (isset($bookingErrors['trip_days'])): ?><span class="field-error"><?= htmlspecialchars($bookingErrors['trip_days'], ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
@@ -831,6 +891,19 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
     // ── Helpers ────────────────────────────────────────────────────────────
     const inr = (n) => (n === 'TBC' || n === null || n === undefined) ? 'TBC' : '₹ ' + Math.round(Number(n)).toLocaleString('en-IN') + '.00';
 
+    // Straight-line distance calculation (Haversine formula) in KM
+    const getDistanceKM = (lat1, lon1, lat2, lon2) => {
+      const R = 6371; // Earth radius in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    };
+
     // Predefined coordinates for common locations to avoid blocking bookings
     const PREDEFINED_LOCATIONS = {
       "chennai": { lat: 13.0827, lng: 80.2707 },
@@ -894,15 +967,24 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
 
     // ── WhatsApp message builder ───────────────────────────────────────
     const openWhatsApp = (p) => {
-      const tripLabel = p.trip_type === 'two-way'
-        ? `Round Trip (${p.trip_days} day${p.trip_days !== '1' ? 's' : ''})`
-        : 'One Way';
+      const isCityRide = p.trip_type === 'city-ride';
+      const tripLabel = isCityRide
+        ? `City Ride (${p.trip_days} hr${p.trip_days !== '1' ? 's' : ''})`
+        : (p.trip_type === 'two-way'
+            ? `Round Trip (${p.trip_days} day${p.trip_days !== '1' ? 's' : ''})`
+            : 'One Way');
+      
+      const allowedKm = isCityRide ? Number(p.trip_days) * 10 : 0;
+      const extraKm = isCityRide ? Math.max(0, Number(p.distance_km) - allowedKm) : 0;
+      const extraKmText = isCityRide ? ` (${extraKm.toFixed(1)} extra km × Rs.${p.per_km}/km)` : ` (${p.distance_km} km × Rs.${p.per_km}/km)`;
+
       const allowanceLine = Number(p.driver_allowance) > 0
         ? `\nDriver Bata : ${inr(p.driver_allowance)}` : '';
       const totalFareLabel = Number(p.total_fare) > 0 ? inr(p.total_fare) : 'To be confirmed on call';
       const distanceLabel = Number(p.distance_km) > 0 ? `${p.distance_km} km` : 'TBC';
+      
       const fareBreakdown = Number(p.total_fare) > 0 
-        ? `Base Fare       : ${inr(p.base_fare)}\nDistance Charge : ${inr(p.dist_charge)}  (${p.distance_km} km × Rs.${p.per_km}/km)${allowanceLine}\n*TOTAL          : ${totalFareLabel}*`
+        ? `Base Fare       : ${inr(p.base_fare)}  (${isCityRide ? p.trip_days + ' hr package' : ''})\nDistance Charge : ${inr(p.dist_charge)}${extraKmText}${allowanceLine}\n*TOTAL          : ${totalFareLabel}*`
         : `*Fare will be manually quoted by support shortly.*`;
 
       const msg = `🚖 *New Booking – White Call Taxi*\n\n*Vehicle :* ${p.vehicle_name || p.vehicle}\n*Trip    :* ${tripLabel}\n\n👤 *Passenger*\nName   : ${p.name}\nMobile : ${p.mobile}\nEmail  : ${p.email || 'N/A'}\n\n📍 *Journey*\nPickup   : ${p.pickup}\nDrop     : ${p.drop}\nDistance : ${distanceLabel}\nDate     : ${p.date}  |  Time : ${p.time}\n\n💰 *Fare Breakdown*\n${fareBreakdown}`;
@@ -920,6 +1002,34 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
       if (!location) { latInput.value = ''; lngInput.value = ''; return; }
       latInput.value = location.lat();
       lngInput.value = location.lng();
+    }
+
+    function syncAutocompleteBounds() {
+      if (!window.google || !google.maps || !google.maps.places || !pickupAutocomplete || !dropAutocomplete) return;
+      const bookingForm = document.getElementById('booking-form');
+      if (!bookingForm) return;
+
+      const selectedTripType = bookingForm.querySelector('input[name="trip_type"]:checked')?.value || 'one-way';
+      const isCityRide = selectedTripType === 'city-ride';
+
+      if (isCityRide) {
+        const chennaiCenter = new google.maps.LatLng(13.0827, 80.2707);
+        const circle = new google.maps.Circle({
+          center: chennaiCenter,
+          radius: 100000 // 100km in meters
+        });
+        const bounds = circle.getBounds();
+
+        pickupAutocomplete.setBounds(bounds);
+        pickupAutocomplete.setOptions({ strictBounds: true });
+        dropAutocomplete.setBounds(bounds);
+        dropAutocomplete.setOptions({ strictBounds: true });
+      } else {
+        pickupAutocomplete.setBounds(null);
+        pickupAutocomplete.setOptions({ strictBounds: false, componentRestrictions: { country: 'in' } });
+        dropAutocomplete.setBounds(null);
+        dropAutocomplete.setOptions({ strictBounds: false, componentRestrictions: { country: 'in' } });
+      }
     }
 
     function initGooglePlaces() {
@@ -940,6 +1050,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
         });
         dropAutocomplete.addListener('place_changed', () => setPlaceCoordinates('drop', dropAutocomplete.getPlace()));
       }
+      syncAutocompleteBounds();
     }
 
     // ── Booking form logic ─────────────────────────────────────────────
@@ -954,6 +1065,8 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
       const tripTypeInputs = bookingForm.querySelectorAll('input[name="trip_type"]');
       const tripDaysField  = document.getElementById('trip-days-field');
       const tripDaysInput  = document.getElementById('trip-days');
+      const cityAndHoursRow = document.getElementById('city-and-hours-row');
+      const tripHoursSelect = document.getElementById('trip-hours');
       const cabTypeInput   = document.getElementById('cabtype');
       const pickupInput    = document.getElementById('pickup');
       const dropInput      = document.getElementById('drop');
@@ -992,7 +1105,17 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
 
       const populateBookingSummary = (item, details) => {
         let baseFareVal, additionalKm, additionalFareVal;
-        if (details.tripType === 'two-way') {
+        if (details.tripType === 'city-ride') {
+          const hours = details.tripDays;
+          const isLarge = ['SUV', 'INNOVA', 'CRYSTA'].includes(item.vehicleCode.toUpperCase());
+          const hourlyRate = isLarge ? 450 : 300;
+          const extraRate = isLarge ? 35 : 25;
+          const allowedKm = hours * 10;
+
+          baseFareVal = hours * hourlyRate;
+          additionalKm = Math.max(0, item.travelDistance - allowedKm);
+          additionalFareVal = additionalKm * extraRate;
+        } else if (details.tripType === 'two-way') {
           const minBaseKm = 250 * details.tripDays;
           additionalKm = Math.max(0, item.travelDistance - minBaseKm);
           baseFareVal = minBaseKm * item.perKm;
@@ -1033,7 +1156,14 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
         };
         const vehicleDesc = descriptions[item.vehicleCode.toUpperCase()] || 'Comfortable AC Cab';
 
-        document.getElementById('summary-book-type').textContent = details.tripType === 'two-way' ? 'Round Trip' : 'One way';
+        if (details.tripType === 'city-ride') {
+          document.getElementById('summary-book-type').textContent = `City Ride (${details.tripDays} hr)`;
+        } else if (details.tripType === 'two-way') {
+          document.getElementById('summary-book-type').textContent = 'Round Trip';
+        } else {
+          document.getElementById('summary-book-type').textContent = 'One way';
+        }
+        
         document.getElementById('summary-vehicle-name').textContent = item.vehicleName;
         const descEl = document.getElementById('summary-vehicle-desc');
         if (descEl) descEl.textContent = vehicleDesc;
@@ -1044,7 +1174,17 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
         document.getElementById('summary-booked-at').textContent = formattedBookedAt;
 
         // Payment details fields
-        if (details.tripType === 'two-way') {
+        if (details.tripType === 'city-ride') {
+          const hours = details.tripDays;
+          document.getElementById('summary-base-fare-label').textContent = `Base Fare [${hours} Hr / ${hours * 10} Km]`;
+          document.getElementById('summary-base-fare-val').textContent = inr(baseFareVal);
+          
+          document.getElementById('summary-additional-fare-label').textContent = `Extra Km Fare [${additionalKm.toFixed(1)} Km]`;
+          document.getElementById('summary-additional-val').textContent = inr(additionalFareVal);
+
+          document.getElementById('summary-driver-bata-label').textContent = `Driver Bata`;
+          document.getElementById('summary-driver-bata-val').textContent = 'Included';
+        } else if (details.tripType === 'two-way') {
           const minBaseKm = 250 * details.tripDays;
           document.getElementById('summary-base-fare-label').textContent = `Base Fare [${minBaseKm} Km]`;
           document.getElementById('summary-base-fare-val').textContent = inr(baseFareVal);
@@ -1210,14 +1350,28 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
 
       const calculateEstimates = (distanceKm) => {
         const tripType = bookingForm.querySelector('input[name="trip_type"]:checked')?.value || 'one-way';
-        const tripDays = tripType === 'two-way' ? Math.max(1, Number(tripDaysInput.value || 1)) : 1;
+        const tripDays = tripType === 'city-ride'
+          ? Math.max(1, Number(tripHoursSelect.value || 1))
+          : (tripType === 'two-way' ? Math.max(1, Number(tripDaysInput.value || 1)) : 1);
         const selectedCabType = cabTypeInput?.value || '';
         const rows = Object.entries(rateTable).filter(([vehicle]) => {
           return selectedCabType === '' || vehicle === selectedCabType;
         }).map(([vehicle, r]) => {
           const travelDistance  = tripType === 'two-way' ? distanceKm * 2 : distanceKm;
           let minBaseKm, perKm, baseFare, additionalDistance, distanceFare, driverAllowance;
-          if (tripType === 'two-way') {
+          if (tripType === 'city-ride') {
+            const hours = tripDays;
+            const isLarge = ['SUV', 'INNOVA', 'CRYSTA'].includes(vehicle.toUpperCase());
+            const hourlyRate = isLarge ? 450 : 300;
+            const extraRate = isLarge ? 35 : 25;
+
+            minBaseKm = hours * 10;
+            perKm = extraRate;
+            baseFare = hours * hourlyRate;
+            additionalDistance = Math.max(0, distanceKm - minBaseKm);
+            distanceFare = additionalDistance * extraRate;
+            driverAllowance = 0;
+          } else if (tripType === 'two-way') {
             minBaseKm = 250 * tripDays;
             perKm = Number(r.round_trip_per_km || 0);
             baseFare = minBaseKm * perKm;
@@ -1265,6 +1419,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
           selectedEstimateCard = card;
           selectedEstimateCard.classList.add('selected');
 
+          const selectedTripType = bookingForm.querySelector('input[name="trip_type"]:checked')?.value || 'one-way';
           const details = {
             name: document.getElementById('name')?.value || '-',
             email: document.getElementById('email')?.value || '-',
@@ -1273,8 +1428,10 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
             drop: dropInput.value || '-',
             date: document.getElementById('date')?.value || '-',
             time: document.getElementById('time')?.value || '-',
-            tripType: bookingForm.querySelector('input[name="trip_type"]:checked')?.value || 'one-way',
-            tripDays: tripDaysField.hidden ? 1 : Math.max(1, Number(tripDaysInput.value || 1)),
+            tripType: selectedTripType,
+            tripDays: (selectedTripType === 'city-ride')
+              ? Math.max(1, Number(tripHoursSelect.value || 1))
+              : (selectedTripType === 'two-way' ? Math.max(1, Number(tripDaysInput.value || 1)) : 1),
           };
 
           currentBookingPayload = {
@@ -1349,6 +1506,56 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
         const pLng = pickupLngInput.value;
         const dLat = dropLatInput.value;
         const dLng = dropLngInput.value;
+        
+        const selectedTripType = bookingForm.querySelector('input[name="trip_type"]:checked')?.value || 'one-way';
+
+        if (selectedTripType === 'city-ride') {
+          const CHENNAI_LAT = 13.0827;
+          const CHENNAI_LNG = 80.2707;
+          const pLatNum = Number(pLat || 0);
+          const pLngNum = Number(pLng || 0);
+          const dLatNum = Number(dLat || 0);
+          const dLngNum = Number(dLng || 0);
+
+          if (pLatNum !== 0 && pLngNum !== 0) {
+            const distPickup = getDistanceKM(CHENNAI_LAT, CHENNAI_LNG, pLatNum, pLngNum);
+            if (distPickup > 100) {
+              renderMessage(errorMessage, 'Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+              pickupInput.setCustomValidity('Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+              bookingForm.reportValidity();
+              throw new Error('Distance exceeds local limit.');
+            }
+          }
+          if (dLatNum !== 0 && dLngNum !== 0) {
+            const distDrop = getDistanceKM(CHENNAI_LAT, CHENNAI_LNG, dLatNum, dLngNum);
+            if (distDrop > 100) {
+              renderMessage(errorMessage, 'Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+              dropInput.setCustomValidity('Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+              bookingForm.reportValidity();
+              throw new Error('Distance exceeds local limit.');
+            }
+          }
+
+          // Keyword check for manual typed outstation locations
+          const outstationKeywords = [
+            'kallakurichi', 'coimbatore', 'bangalore', 'madurai', 'trichy', 'salem', 'pondicherry', 'vellore', 'tirupati',
+            'kanyakumari', 'hosur', 'krishnagiri', 'dharmapuri', 'erode', 'tiruppur', 'karur', 'namakkal', 'dindigul',
+            'theni', 'virudhunagar', 'sivakasi', 'tirunelveli', 'tuticorin', 'thoothukudi', 'tenkasi', 'nagercoil',
+            'ramanathapuram', 'sivaganga', 'karaikudi', 'pudukkottai', 'thanjavur', 'kumbakonam', 'mayiladuthurai',
+            'nagapattinam', 'tiruvarur', 'cuddalore', 'chidambaram', 'viluppuram', 'tindivanam', 'tiruvannamalai',
+            'arani', 'vaniyambadi', 'ambur', 'ranipet', 'arakkonam'
+          ];
+          const pVal = pickupInput.value.toLowerCase();
+          const dVal = dropInput.value.toLowerCase();
+          const matchesKeyword = outstationKeywords.some(kw => pVal.includes(kw) || dVal.includes(kw));
+          
+          if (matchesKeyword) {
+            renderMessage(errorMessage, 'Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+            pickupInput.setCustomValidity('Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+            bookingForm.reportValidity();
+            throw new Error('Distance exceeds local limit.');
+          }
+        }
 
         // Try using Google distance matrix if we have coordinates
         if (pLat && pLng && dLat && dLng) {
@@ -1357,12 +1564,20 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
             const response = await fetch(`distance.php?${params}`, { headers: { Accept: 'application/json' } });
             const payload  = await response.json();
             if (response.ok && payload.distance_km) {
+              const distNum = Number(payload.distance_km);
+              if (selectedTripType === 'city-ride' && distNum > 100) {
+                renderMessage(errorMessage, 'Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+                pickupInput.setCustomValidity('Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+                bookingForm.reportValidity();
+                throw new Error('Distance exceeds local limit.');
+              }
               distanceInput.value = payload.distance_km;
-              calculateEstimates(Number(payload.distance_km));
+              calculateEstimates(distNum);
               return;
             }
           } catch (err) {
             console.warn('Distance Matrix call failed, trying fallback...', err);
+            if (err.message === 'Distance exceeds local limit.') throw err;
           }
         }
 
@@ -1382,10 +1597,32 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
       };
 
       const syncTripTypeFields = () => {
-        const isRoundTrip = bookingForm.querySelector('input[name="trip_type"]:checked')?.value === 'two-way';
-        tripDaysField.hidden    = !isRoundTrip;
+        const selectedTripType = bookingForm.querySelector('input[name="trip_type"]:checked')?.value || 'one-way';
+        const isRoundTrip = selectedTripType === 'two-way';
+        const isCityRide = selectedTripType === 'city-ride';
+
+        if (tripDaysField) {
+          tripDaysField.style.display = isRoundTrip ? '' : 'none';
+        }
         tripDaysInput.required  = isRoundTrip;
-        if (!isRoundTrip) { tripDaysInput.value = ''; tripDaysInput.setCustomValidity(''); }
+
+        if (cityAndHoursRow) {
+          cityAndHoursRow.style.display = isCityRide ? '' : 'none';
+        }
+
+        if (isCityRide) {
+          tripDaysInput.removeAttribute('name');
+          if (tripHoursSelect) tripHoursSelect.name = 'trip_days';
+        } else {
+          tripDaysInput.name = 'trip_days';
+          if (tripHoursSelect) tripHoursSelect.removeAttribute('name');
+        }
+
+        if (!isRoundTrip) { 
+          tripDaysInput.value = ''; 
+          tripDaysInput.setCustomValidity(''); 
+        }
+        syncAutocompleteBounds();
       };
 
       syncTripTypeFields();
@@ -1453,7 +1690,9 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
       }
 
       const initialTripType = bookingForm.querySelector('input[name="trip_type"]:checked')?.value || 'one-way';
-      const initialTripDays = initialTripType === 'two-way' ? Math.max(1, Number(tripDaysInput.value || 1)) : 1;
+      const initialTripDays = initialTripType === 'city-ride'
+        ? Math.max(1, Number(tripHoursSelect?.value || 1))
+        : (initialTripType === 'two-way' ? Math.max(1, Number(tripDaysInput.value || 1)) : 1);
       resultsGrid?.querySelectorAll('.estimate-card').forEach((card) => {
         const button = card.querySelector('.estimate-select-btn');
         if (!button) return;
@@ -1498,6 +1737,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
 
       bookingForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const selectedTripType = bookingForm.querySelector('input[name="trip_type"]:checked')?.value || 'one-way';
         mobileInput.setCustomValidity('');
         emailInput.setCustomValidity('');
         tripDaysInput.setCustomValidity('');
@@ -1515,7 +1755,7 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
         } else {
           emailInput.setCustomValidity('');
         }
-        if (!tripDaysField.hidden) {
+        if (selectedTripType === 'two-way') {
           if (tripDaysInput.validity.valueMissing) tripDaysInput.setCustomValidity('Enter the number of days for the round trip.');
           else if (Number(tripDaysInput.value) < 1) tripDaysInput.setCustomValidity('Days must be at least 1.');
         }
@@ -1524,8 +1764,38 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
 
         if (!dropInput.value.trim()) dropInput.setCustomValidity('Enter the drop location.');
         else dropInput.setCustomValidity('');
+        if (selectedTripType === 'city-ride') {
+          const CHENNAI_LAT = 13.0827;
+          const CHENNAI_LNG = 80.2707;
+          const pLat = Number(pickupLatInput.value || 0);
+          const pLng = Number(pickupLngInput.value || 0);
+          const dLat = Number(dropLatInput.value || 0);
+          const dLng = Number(dropLngInput.value || 0);
 
-        if (!bookingForm.checkValidity()) { bookingForm.reportValidity(); renderMessage(errorMessage, 'Please correct the highlighted form fields.'); renderMessage(successMessage, ''); return; }
+          if (pLat !== 0 && pLng !== 0) {
+            const distPickup = getDistanceKM(CHENNAI_LAT, CHENNAI_LNG, pLat, pLng);
+            if (distPickup > 100) {
+              pickupInput.setCustomValidity('Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+            }
+          }
+          if (dLat !== 0 && dLng !== 0) {
+            const distDrop = getDistanceKM(CHENNAI_LAT, CHENNAI_LNG, dLat, dLng);
+            if (distDrop > 100) {
+              dropInput.setCustomValidity('Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+            }
+          }
+        }
+
+        if (!bookingForm.checkValidity()) {
+          bookingForm.reportValidity();
+          if (selectedTripType === 'city-ride' && (pickupInput.validationMessage.includes('100km') || dropInput.validationMessage.includes('100km'))) {
+            renderMessage(errorMessage, 'Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+          } else {
+            renderMessage(errorMessage, 'Please correct the highlighted form fields.');
+          }
+          renderMessage(successMessage, '');
+          return;
+        }
 
         try {
           renderMessage(errorMessage, '');
@@ -1533,7 +1803,13 @@ $heroDescription = $selectedRoute['hero_description'] ?? 'White One Way Drop Tax
           await fetchDistanceAndEstimate();
         } catch (err) {
           console.warn(err);
-          showFallbackEstimate();
+          if (err.message === 'Distance exceeds local limit.') {
+            // Error is already displayed
+          } else if (selectedTripType === 'city-ride') {
+            renderMessage(errorMessage, 'Your pickup and drop location is more than 100km. Please select a location within Chennai city limits.');
+          } else {
+            showFallbackEstimate();
+          }
         }
       });
     }

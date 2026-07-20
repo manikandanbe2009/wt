@@ -175,13 +175,14 @@ if (!$booking) {
                   <select id="trip_type" name="trip_type">
                     <option value="one-way" <?= (string) $booking['trip_type'] === 'one-way' ? 'selected' : '' ?>>One Way</option>
                     <option value="two-way" <?= (string) $booking['trip_type'] === 'two-way' ? 'selected' : '' ?>>Round Trip</option>
+                    <option value="city-ride" <?= (string) $booking['trip_type'] === 'city-ride' ? 'selected' : '' ?>>City Ride</option>
                   </select>
                 </div>
               </div>
 
               <div class="field-row field-row-compact">
                 <div class="field">
-                  <label for="trip_days">Trip Days</label>
+                  <label for="trip_days">Trip Days / Hours</label>
                   <input id="trip_days" name="trip_days" type="number" min="1" value="<?= htmlspecialchars((string) $booking['trip_days'], ENT_QUOTES, 'UTF-8') ?>">
                 </div>
                 <div class="field">

@@ -9,6 +9,9 @@ function booking_success_db(): mysqli
 
 function booking_label(string $tripType, int $tripDays): string
 {
+    if ($tripType === 'city-ride') {
+        return 'City Ride' . ($tripDays > 0 ? ' (' . $tripDays . ' hr' . ($tripDays === 1 ? '' : 's') . ')' : '');
+    }
     if ($tripType === 'two-way') {
         return 'Round Trip' . ($tripDays > 0 ? ' (' . $tripDays . ' day' . ($tripDays === 1 ? '' : 's') . ')' : '');
     }
@@ -150,28 +153,64 @@ if ($bookingId === '') {
                     </div>
                   </div>
                   <?php 
+                    $isCityRide = ($booking['trip_type'] === 'city-ride');
                     $isRoundTrip = ($booking['trip_type'] === 'two-way');
-                    $minBaseKm = $isRoundTrip ? 250 * (int)$booking['trip_days'] : 130;
-                    $additionalKm = max(0.0, (float)$booking['distance_km'] - $minBaseKm);
+                    
+                    if ($isCityRide) {
+                        $hours = (int) $booking['trip_days'];
+                        $minBaseKm = $hours * 10;
+                        $additionalKm = max(0.0, (float)$booking['distance_km'] - $minBaseKm);
+                    } else {
+                        $minBaseKm = $isRoundTrip ? 250 * (int)$booking['trip_days'] : 130;
+                        $additionalKm = max(0.0, (float)$booking['distance_km'] - $minBaseKm);
+                    }
                   ?>
                   <div class="booking-summary-row booking-summary-row-total">
-                    <span class="summary-row-label">Base Fare [<?= $minBaseKm ?> Km] :</span>
+                    <span class="summary-row-label">
+                      <?php if ($isCityRide): ?>
+                        Base Fare [<?= $booking['trip_days'] ?> Hr(s) / <?= $minBaseKm ?> Km] :
+                      <?php else: ?>
+                        Base Fare [<?= $minBaseKm ?> Km] :
+                      <?php endif; ?>
+                    </span>
                     <strong class="summary-row-value">Rs. <?= htmlspecialchars(number_format((float) $booking['base_fare'], 2), ENT_QUOTES, 'UTF-8') ?></strong>
                   </div>
                   <div class="booking-summary-row booking-summary-row-total">
-                    <span class="summary-row-label">Additional Fare [<?= number_format($additionalKm, 1) ?> Km] :</span>
+                    <span class="summary-row-label">
+                      <?php if ($isCityRide): ?>
+                        Extra Distance Fare [<?= number_format($additionalKm, 1) ?> Km] :
+                      <?php else: ?>
+                        Additional Fare [<?= number_format($additionalKm, 1) ?> Km] :
+                      <?php endif; ?>
+                    </span>
                     <strong class="summary-row-value">Rs. <?= htmlspecialchars(number_format((float) $booking['dist_charge'], 2), ENT_QUOTES, 'UTF-8') ?></strong>
                   </div>
                   <div class="booking-summary-row booking-summary-row-total">
-                    <span class="summary-row-label"><?= $isRoundTrip ? 'Driver Bata [' . $booking['trip_days'] . ' Day' . ((int)$booking['trip_days'] > 1 ? 's' : '') . '] :' : 'Driver Bata :' ?></span>
-                    <strong class="summary-row-value">Rs. <?= htmlspecialchars(number_format((float) $booking['driver_allowance'], 2), ENT_QUOTES, 'UTF-8') ?></strong>
+                    <span class="summary-row-label">
+                      <?php if ($isCityRide): ?>
+                        Driver Bata :
+                      <?php elseif ($isRoundTrip): ?>
+                        Driver Bata [<?= $booking['trip_days'] ?> Day<?= ((int)$booking['trip_days'] > 1 ? 's' : '') ?>] :
+                      <?php else: ?>
+                        Driver Bata :
+                      <?php endif; ?>
+                    </span>
+                    <strong class="summary-row-value">
+                      <?php if ($isCityRide): ?>
+                        Included
+                      <?php else: ?>
+                        Rs. <?= htmlspecialchars(number_format((float) $booking['driver_allowance'], 2), ENT_QUOTES, 'UTF-8') ?>
+                      <?php endif; ?>
+                    </strong>
                   </div>
                   <div class="booking-summary-row booking-summary-row-grand">
                     <span class="summary-row-label">Total Fare</span>
                     <strong class="summary-row-value">Rs. <?= htmlspecialchars(number_format((float) $booking['total_fare'], 2), ENT_QUOTES, 'UTF-8') ?></strong>
                   </div>
                   <div class="payment-note-box" style="margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.04); border-radius: 8px; border-left: 3px solid #ffc107;">
-                    <?php if ($booking['trip_type'] === 'two-way'): ?>
+                    <?php if ($isCityRide): ?>
+                      <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.5;"><strong>Note:</strong> City Ride pricing is based on hourly packages where each hour includes 10 Km of local travel. Extra distance is charged per kilometer. Waiting times, tolls, and parking might be extra.</p>
+                    <?php elseif ($isRoundTrip): ?>
                       <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.5;"><strong>Note:</strong> Round trip minimum base KM is 250 Km/day. Driver Bata is charged per day. Actual bill amount might differ based on actual KMs travelled, Hill-station charges, Inter-state Permits, Toll Charges etc.</p>
                     <?php else: ?>
                       <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.5;"><strong>Note:</strong> One-way minimum base KM is 130 Km. Actual bill amount might differ based on actual KMs travelled, Waiting time, Hill-station charges, Inter-state Permits, Toll Charges etc.</p>
